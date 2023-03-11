@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 const keys = require("../keys.js");
+const trees = require("../mockTrees.json");
 
 const useDrawMap = () => {
   useEffect(() => {
@@ -25,6 +26,19 @@ const useDrawMap = () => {
         );
 
         const infoWindow = new google.maps.InfoWindow();
+        if (trees.length) {
+          trees.map((t) => {
+            const pos = {
+              lat: t.latitude,
+              lng: t.longitude,
+            };
+            return new google.maps.Marker({
+              position: pos,
+              map,
+              icon: require(`../images/parks_small.png`),
+            });
+          });
+        }
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
