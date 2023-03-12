@@ -35,6 +35,7 @@ const useDrawMap = () => {
             return new google.maps.Marker({
               position: pos,
               map,
+              animation: google.maps.Animation.DROP,
               icon: require(`../images/parks_small.png`),
             });
           });
