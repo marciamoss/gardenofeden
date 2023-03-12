@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AboutModal from "../AboutModal";
 import HowItWorksModal from "../HowItWorksModal";
+import SigninModal from "../Signin/SigninModal";
 
 const Header = () => {
   const [showAbout, setShowAbout] = useState(false);
   const [showWorks, setShowWorks] = useState(false);
+  const [showSignin, setShowSignin] = useState(false);
+
   return (
     <nav className="py-6 px-10 w-full bg-black">
       <div className="flex justify-between items-center container mx-auto bg-black">
@@ -40,8 +43,17 @@ const Header = () => {
           ) : (
             ""
           )}
-
-          <button className="ml-10">OK</button>
+          <button className="ml-10" onClick={() => setShowSignin(true)}>
+            OK
+          </button>
+          {showSignin ? (
+            <SigninModal
+              showSignin={showSignin}
+              setShowSignin={setShowSignin}
+            />
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </nav>
