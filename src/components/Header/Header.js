@@ -10,7 +10,7 @@ const Header = () => {
   const [showSignin, setShowSignin] = useState(false);
 
   return (
-    <nav className="py-6 px-10 w-full bg-black">
+    <nav className="py-6 px-10 w-full bg-black mb-5">
       <div className="flex justify-between items-center container mx-auto bg-black">
         <div>
           <Link to="/">
