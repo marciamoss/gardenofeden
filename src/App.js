@@ -1,19 +1,26 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Header from "./components/Header/Header";
-import Footer from "./components/Footer/Footer";
-import Main from "./components/Main/Main";
-import Profile from "./components/Profile/Profile";
+import { DEFAULTCOMPONENTS, SIGNEDINCOMPONENTS } from "./constants/routes";
 
 const App = () => {
+  const { signedIn } = useSelector((state) => {
+    return {
+      signedIn: state.authData.signedIn,
+    };
+  });
   return (
     <Router>
-      <Header />
       <Routes>
-        <Route path={"/"} element={<Main />} />
-        <Route path={"/profile"} element={<Profile />} />
+        {DEFAULTCOMPONENTS.map((rt) => (
+          <Route key={rt.r} path={rt.r} element={rt.p} />
+        ))}
+        {signedIn
+          ? SIGNEDINCOMPONENTS.map((rt) => (
+              <Route key={rt.r} path={rt.r} element={rt.p} />
+            ))
+          : ""}
       </Routes>
-      <Footer />
     </Router>
   );
 };

@@ -40,7 +40,11 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-sky-900 p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel
+                  className={`${
+                    signedUp ? "bg-red-900" : "bg-sky-900"
+                  } w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all`}
+                >
                   {signedUp ? (
                     <button
                       type="button"
