@@ -69,7 +69,10 @@ const Header = () => {
               ""
             )}
             <Link to="/profile">
-              <CgProfile size={25} className="bg-white float-left mt-1" />
+              <CgProfile
+                size={25}
+                className="bg-white float-left mt-1 max-[640px]:mt-0"
+              />
               <h1 className="max-[640px]:text-sm text-lg text-zinc-50 font-bold float-left ml-1">
                 Profile
               </h1>
