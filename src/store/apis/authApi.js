@@ -6,6 +6,7 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  signOut,
 } from "firebase/auth";
 const keys = require("../../keys.js");
 const app = initializeApp(keys.firebaseConfig);
@@ -55,6 +56,7 @@ const authApi = createApi({
                   showError: true,
                   errorMessage,
                   showWelcomeMessage: false,
+                  showProfile: false,
                 })
               );
             });
@@ -74,6 +76,7 @@ const authApi = createApi({
                   errorMessage: null,
                   emailConfirm: true,
                   showWelcomeMessage: false,
+                  showProfile: false,
                 })
               );
             } else {
@@ -90,6 +93,7 @@ const authApi = createApi({
           signInWithEmailLink(auth, email, window.location.href)
             .then((result) => {
               if (result.user.email) {
+                window.location.replace(keys.homePage.url);
                 dispatch(
                   authDataInfo({
                     signedIn: true,
@@ -110,7 +114,6 @@ const authApi = createApi({
             })
             .catch((error) => {
               window.localStorage.removeItem("gardenofeden");
-
               let errorMessage = "LogIn Link is expired";
               if (error.code === "auth/invalid-email") {
                 errorMessage = `The email provided does not match the sign-in email address.`;
@@ -122,8 +125,31 @@ const authApi = createApi({
                   showError: true,
                   errorMessage,
                   showWelcomeMessage: false,
+                  showProfile: false,
                 })
               );
+            });
+          return {};
+        },
+      }),
+      logOut: builder.mutation({
+        queryFn: async ({ email }, { dispatch }) => {
+          signOut(auth)
+            .then((response) => {
+              window.localStorage.removeItem("gardenofeden");
+              dispatch(
+                authDataInfo({
+                  signedIn: false,
+                  authUserId: null,
+                  showError: false,
+                  errorMessage: null,
+                  showWelcomeMessage: false,
+                  showProfile: false,
+                })
+              );
+            })
+            .catch((error) => {
+              console.log("signout error");
             });
           return {};
         },
@@ -136,5 +162,6 @@ export const {
   useLogInMutation,
   useEmailLinkCompleteQuery,
   useSignInCompleteMutation,
+  useLogOutMutation,
 } = authApi;
 export { authApi };

@@ -15,6 +15,7 @@ const initialState = {
   emailConfirm: false,
   validRoute: false,
   emailSent: false,
+  showProfile: false,
 };
 const authDataSlice = createSlice({
   name: "authData",

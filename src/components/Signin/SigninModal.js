@@ -51,7 +51,6 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                       className="absolute right-0 top-0 p-2 outline-none"
                       onClick={() => {
                         setShowSignin(false);
-                        window.location.reload();
                       }}
                     >
                       <MdClose size={25} />
@@ -64,7 +63,7 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                     className="text-lg font-serif font-medium leading-6 text-center"
                   >
                     {signedUp
-                      ? `You are already signed in as ${signedUp}`
+                      ? `You are already signed in as ${signedUp}, logout from this account if you want to login into a different account`
                       : "Sign Up/In"}
                   </Dialog.Title>
                   {!signedUp ? (

@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import AboutModal from "../About/AboutModal";
-import HowItWorksModal from "../HowItWorks/HowItWorksModal";
-import SigninModal from "../Signin/SigninModal";
 import SigninEmailConfirmModal from "../Signin/SigninEmailConfirmModal";
 import MessageModal from "../Message/MessageModal";
-import { CgProfile } from "react-icons/cg";
+import MenuDropDown from "../Menu/MenuDropDown";
 import { authDataInfo } from "../../store";
-
 import { useEmailLinkCompleteQuery } from "../../store";
+import { ImMenu } from "react-icons/im";
+import { GoChevronDown } from "react-icons/go";
+import { Menu } from "@headlessui/react";
+const logo = require(`../../images/tree-earth.png`);
 
 const Header = () => {
   const dispatch = useDispatch();
-  const [showAbout, setShowAbout] = useState(false);
-  const [showWorks, setShowWorks] = useState(false);
-  const [showSignin, setShowSignin] = useState(false);
+  const navigate = useNavigate();
+
+  const [menuClicked, setMenuClicked] = useState(false);
 
   const {
     signedIn,
@@ -32,34 +32,60 @@ const Header = () => {
       emailConfirm: state.authData.emailConfirm,
       emailSent: state.authData.emailSent,
       showWelcomeMessage: state.authData.showWelcomeMessage,
+      authUserId: state.authData.authUserId,
     };
   });
-
   useEmailLinkCompleteQuery({ signedIn });
 
   return (
-    <nav className={`${signedIn ? "py-6 px-10" : ""} w-full bg-black`}>
+    <nav className="py-3 px-10 w-full bg-black">
       <div className="flex justify-between items-center container mx-auto bg-black">
-        <div>
-          <Link to="/">
+        <div className="float-left">
+          <button
+            onClick={() => dispatch(authDataInfo({ showProfile: false }))}
+          >
             <img
               className="h-7 w-7 float-left max-[640px]:h-5 max-[640px]:w-5"
-              src={require(`../../images/tree-earth.png`)}
+              src={logo}
               alt="Tree menu-icon"
             />
             <h1 className="max-[640px]:text-sm text-lg text-zinc-50 font-bold float-left ml-1">
               Garden Of Eden
             </h1>
-          </Link>
+          </button>
         </div>
+
+        <div className="text-right">
+          <Menu
+            as="div"
+            className="relative inline-block text-left float-right z-30"
+          >
+            <div>
+              <Menu.Button
+                onClick={() => {
+                  setMenuClicked(!menuClicked);
+                }}
+                className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+              >
+                <ImMenu size={30} />
+                <GoChevronDown />
+              </Menu.Button>
+            </div>
+            <MenuDropDown
+              className="text-right z-40"
+              menuClicked={menuClicked}
+            />
+          </Menu>
+        </div>
+
         {signedIn ? (
           <>
             {showWelcomeMessage ? (
               <MessageModal
                 showModal={showWelcomeMessage}
-                dispatchType={() =>
-                  dispatch(authDataInfo({ showWelcomeMessage: false }))
-                }
+                dispatchType={() => {
+                  dispatch(authDataInfo({ showWelcomeMessage: false }));
+                }}
                 message={
                   "Welcome to Garden Of Eden. Please make yourself at home."
                 }
@@ -68,15 +94,6 @@ const Header = () => {
             ) : (
               ""
             )}
-            <Link to="/profile">
-              <CgProfile
-                size={25}
-                className="bg-white float-left mt-1 max-[640px]:mt-0"
-              />
-              <h1 className="max-[640px]:text-sm text-lg text-zinc-50 font-bold float-left ml-1">
-                Profile
-              </h1>
-            </Link>
           </>
         ) : (
           <>
@@ -84,9 +101,10 @@ const Header = () => {
               {showError ? (
                 <MessageModal
                   showModal={showError}
-                  dispatchType={() =>
-                    dispatch(authDataInfo({ showError: false }))
-                  }
+                  dispatchType={() => {
+                    dispatch(authDataInfo({ showError: false }));
+                    navigate("");
+                  }}
                   message={`${errorMessage}, Try again`}
                   modalColor={"bg-orange-900"}
                 />
@@ -110,48 +128,11 @@ const Header = () => {
                 ""
               )}
             </>
-            <div className="max-[640px]:text-sm text-lg text-zinc-50 font-bold p-3">
-              <button onClick={() => setShowAbout(true)}>WHY</button>
-              {showAbout ? (
-                <AboutModal showAbout={showAbout} setShowAbout={setShowAbout} />
-              ) : (
-                ""
-              )}
-
-              <button
-                className="max-[640px]:text-sm text-lg text-zinc-50 font-bold p-3"
-                onClick={() => setShowWorks(true)}
-              >
-                HOW
-              </button>
-              {showWorks ? (
-                <HowItWorksModal
-                  showWorks={showWorks}
-                  setShowWorks={setShowWorks}
-                />
-              ) : (
-                ""
-              )}
-              <button
-                className="max-[640px]:text-sm text-lg text-zinc-50 font-bold p-3"
-                onClick={() => setShowSignin(true)}
-              >
-                OK
-              </button>
-              {showSignin ? (
-                <SigninModal
-                  showSignin={showSignin}
-                  setShowSignin={setShowSignin}
-                />
-              ) : (
-                ""
-              )}
-              {emailConfirm ? (
-                <SigninEmailConfirmModal emailConfirm={emailConfirm} />
-              ) : (
-                ""
-              )}
-            </div>
+            {emailConfirm ? (
+              <SigninEmailConfirmModal emailConfirm={emailConfirm} />
+            ) : (
+              ""
+            )}
           </>
         )}
       </div>

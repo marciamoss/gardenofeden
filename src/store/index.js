@@ -21,6 +21,7 @@ export {
   useLogInMutation,
   useEmailLinkCompleteQuery,
   useSignInCompleteMutation,
+  useLogOutMutation,
 } from "./apis/authApi";
 
 export {} from "./apis/authApi";
