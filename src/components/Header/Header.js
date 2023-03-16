@@ -38,7 +38,7 @@ const Header = () => {
   useEmailLinkCompleteQuery({ signedIn });
 
   return (
-    <nav className="py-6 px-10 w-full bg-black">
+    <nav className={`${signedIn ? "py-6 px-10" : ""} w-full bg-black`}>
       <div className="flex justify-between items-center container mx-auto bg-black">
         <div>
           <Link to="/">
