@@ -19,7 +19,7 @@ const Main = () => {
         id="map"
         className={`${
           showProfile ? "hidden" : ""
-        } w-screen h-screen mx-auto mt-2`}
+        } w-screen h-screen mx-auto mt-7`}
       ></div>
     </>
   );

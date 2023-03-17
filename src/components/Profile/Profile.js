@@ -5,7 +5,7 @@ const Profile = () => {
   return (
     <div
       id="profile"
-      className="profile-body w-screen h-screen text-center text-xl font-extrabold"
+      className="profile-body w-screen h-screen mx-auto mt-7 text-center text-xl font-extrabold"
     >
       Profile Page on the way...
     </div>

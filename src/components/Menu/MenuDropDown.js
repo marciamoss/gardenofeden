@@ -7,6 +7,7 @@ import SigninModal from "../Signin/SigninModal";
 import "./MenuDropDown.css";
 import { Menu, Transition } from "@headlessui/react";
 import { CgProfile } from "react-icons/cg";
+import MessageModal from "../Message/MessageModal";
 
 const MenuDropDown = ({ menuClicked }) => {
   const dispatch = useDispatch();
@@ -14,9 +15,11 @@ const MenuDropDown = ({ menuClicked }) => {
   const [showAbout, setShowAbout] = useState(false);
   const [showWorks, setShowWorks] = useState(false);
   const [showSignin, setShowSignin] = useState(false);
-  const { authUserId } = useSelector((state) => {
+  const { authUserId, showProfile, loggedOutMessage } = useSelector((state) => {
     return {
       authUserId: state.authData.authUserId,
+      showProfile: state.authData.showProfile,
+      loggedOutMessage: state.authData.loggedOutMessage,
     };
   });
   const [signedIn, setSignedIn] = useState(
@@ -31,7 +34,20 @@ const MenuDropDown = ({ menuClicked }) => {
         ? true
         : false
     );
-  }, [signedIn, menuClicked]);
+    if (!signedIn) {
+      dispatch(
+        authDataInfo({
+          signedIn: false,
+          authUserId: null,
+          showError: false,
+          errorMessage: null,
+          showWelcomeMessage: false,
+          showProfile: false,
+          loggedOutMessage: showProfile ? true : false,
+        })
+      );
+    }
+  }, [signedIn, menuClicked, dispatch, showProfile]);
   return (
     <>
       <Transition
@@ -57,7 +73,6 @@ const MenuDropDown = ({ menuClicked }) => {
                         dispatch(
                           authDataInfo({
                             showProfile: true,
-                            signedIn: signedIn,
                           })
                         )
                       }
@@ -133,6 +148,20 @@ const MenuDropDown = ({ menuClicked }) => {
       )}
       {showSignin ? (
         <SigninModal showSignin={showSignin} setShowSignin={setShowSignin} />
+      ) : (
+        ""
+      )}
+
+      {loggedOutMessage ? (
+        <MessageModal
+          showModal={loggedOutMessage}
+          dispatchType={() => {
+            setShowSignin(true);
+            dispatch(authDataInfo({ loggedOutMessage: false }));
+          }}
+          message={`You have been logged out from another session on this window, Login again`}
+          modalColor={"bg-orange-900"}
+        />
       ) : (
         ""
       )}

@@ -28,6 +28,7 @@ const authApi = createApi({
             authDataInfo({
               showError: false,
               errorMessage: null,
+              loggedOutMessage: false,
             })
           );
           const actionCodeSettings = {
@@ -57,6 +58,7 @@ const authApi = createApi({
                   errorMessage,
                   showWelcomeMessage: false,
                   showProfile: false,
+                  loggedOutMessage: false,
                 })
               );
             });
@@ -77,6 +79,7 @@ const authApi = createApi({
                   emailConfirm: true,
                   showWelcomeMessage: false,
                   showProfile: false,
+                  loggedOutMessage: false,
                 })
               );
             } else {
@@ -100,6 +103,7 @@ const authApi = createApi({
                     showError: false,
                     errorMessage: null,
                     showWelcomeMessage: true,
+                    loggedOutMessage: false,
                   })
                 );
                 localStorage.setItem(
@@ -125,6 +129,7 @@ const authApi = createApi({
                   errorMessage,
                   showWelcomeMessage: false,
                   showProfile: false,
+                  loggedOutMessage: false,
                 })
               );
             });
@@ -144,6 +149,7 @@ const authApi = createApi({
                   errorMessage: null,
                   showWelcomeMessage: false,
                   showProfile: false,
+                  loggedOutMessage: false,
                 })
               );
             })

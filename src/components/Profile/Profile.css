@@ -1,10 +1,5 @@
-/* .profile-body {
-  background: url("../../images/Topo-Map.png") center center repeat;
-  height: 90vh;
-} */
 .profile-body {
   background: url("../../images/Topo-Map.png") center center repeat;
   height: 80vh;
   width: 95vw;
-  margin-top: 10px;
 }
