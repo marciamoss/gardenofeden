@@ -93,7 +93,6 @@ const authApi = createApi({
           signInWithEmailLink(auth, email, window.location.href)
             .then((result) => {
               if (result.user.email) {
-                window.location.replace(keys.homePage.url);
                 dispatch(
                   authDataInfo({
                     signedIn: true,

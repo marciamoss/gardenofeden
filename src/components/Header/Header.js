@@ -85,6 +85,7 @@ const Header = () => {
                 showModal={showWelcomeMessage}
                 dispatchType={() => {
                   dispatch(authDataInfo({ showWelcomeMessage: false }));
+                  navigate("");
                 }}
                 message={
                   "Welcome to Garden Of Eden. Please make yourself at home."
