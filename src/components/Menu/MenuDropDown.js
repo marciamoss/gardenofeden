@@ -42,7 +42,6 @@ const MenuDropDown = ({ menuClicked }) => {
           showError: false,
           errorMessage: null,
           showWelcomeMessage: false,
-          showProfile: false,
           loggedOutMessage: showProfile ? true : false,
         })
       );
@@ -157,7 +156,9 @@ const MenuDropDown = ({ menuClicked }) => {
           showModal={loggedOutMessage}
           dispatchType={() => {
             setShowSignin(true);
-            dispatch(authDataInfo({ loggedOutMessage: false }));
+            dispatch(
+              authDataInfo({ showProfile: false, loggedOutMessage: false })
+            );
           }}
           message={`You have been logged out from another session on this window, Login again`}
           modalColor={"bg-orange-900"}
