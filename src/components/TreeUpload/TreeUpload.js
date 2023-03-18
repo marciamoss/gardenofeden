@@ -7,7 +7,6 @@ const TreeUpload = () => {
   const [images, setImages] = React.useState([]);
   const maxNumber = 50;
   const onChange = (imageList, addUpdateIndex) => {
-    // data for submit
     console.log(imageList, addUpdateIndex);
     setImages(imageList);
   };
@@ -23,14 +22,24 @@ const TreeUpload = () => {
       {({
         imageList,
         onImageUpload,
-        onImageRemoveAll,
         onImageUpdate,
         onImageRemove,
         isDragging,
         dragProps,
       }) => (
-        // write your building UI
-        <div className="upload__image-wrapper">
+        <div className="static">
+          <div className="relative">
+            <button
+              className="bg-gray-200 text-black font-bold rounded-2xl p-1 w-fit h-24 p-2 max-[640px]:h-fit"
+              style={isDragging ? { color: "red" } : null}
+              onClick={onImageUpload}
+              {...dragProps}
+            >
+              Click or Drop the images in this box, of the trees you planted and
+              click save button besides the image
+            </button>
+            &nbsp;
+          </div>
           {imageList.map((image, index) => (
             <div key={index} className="image-item">
               <Card className="border-2 border-white">
@@ -59,23 +68,6 @@ const TreeUpload = () => {
               </div>
             </div>
           ))}
-          <div className="fixed">
-            <button
-              className="bg-lime-900 p-1 rounded"
-              style={isDragging ? { color: "red" } : null}
-              onClick={onImageUpload}
-              {...dragProps}
-            >
-              Click or Drop here
-            </button>
-            &nbsp;
-            <button
-              className="bg-yellow-900 p-1 max-[640px]:mt-2 rounded"
-              onClick={onImageRemoveAll}
-            >
-              Remove all images
-            </button>
-          </div>
         </div>
       )}
     </ImageUploading>

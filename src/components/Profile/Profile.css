@@ -26,14 +26,17 @@
   overflow: scroll;
   border-radius: 25px;
 }
-/* .image-item {
-  display: flex;
-  width: 200px;
+
+.about {
+  font-family: sans-serif;
+  text-align: center;
+  color: black;
+  background-color: rgb(197, 240, 197);
+  height: 10vh;
+  width: 70%;
   float: right;
-  margin-top: 100px;
+  margin-top: 2%;
+  margin-right: 2%;
+  overflow: scroll;
+  border-radius: 25px;
 }
-.image-item__btn-wrapper {
-  display: flex;
-  flex-direction: column;
-  margin-left: 10px;
-} */
