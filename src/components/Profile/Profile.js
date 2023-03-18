@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import "./Profile.css";
 import {
   Card,
@@ -10,15 +11,29 @@ import ImageUploading from "react-images-uploading";
 import { CgProfile } from "react-icons/cg";
 import TreeUpload from "../TreeUpload/TreeUpload";
 import ProfileUpdateForm from "./ProfileUpdateForm";
+import { useSaveUserProfileMutation, useFetchUserQuery } from "../../store";
 
 const Profile = () => {
   const [image, setImage] = React.useState([]);
   const [showProfileUpdate, setShowProfileUpdate] = React.useState(false);
   const maxNumber = 1;
-  const onChange = (imageList, addUpdateIndex) => {
-    console.log(imageList, addUpdateIndex);
+  const onChange = (imageList) => {
     setImage(imageList);
+    saveUserProfile({
+      edenUser: {
+        userId: authUserId,
+        profile_image_link: imageList[0].data_url,
+      },
+    });
   };
+  const { authUserId } = useSelector((state) => {
+    return {
+      authUserId: state.authData.authUserId,
+    };
+  });
+  const [saveUserProfile, results] = useSaveUserProfileMutation();
+  const { data } = useFetchUserQuery(authUserId);
+
   return (
     <div
       id="profile"
@@ -37,69 +52,88 @@ const Profile = () => {
             imageList,
             onImageUpload,
             onImageUpdate,
-            onImageRemove,
             isDragging,
             dragProps,
           }) => (
             <>
-              <CardHeader floated={false} className="h-80 m-2 rounded">
-                {!image[0]?.data_url ? (
+              <CardHeader
+                floated={false}
+                className="profile-pic-header m-2 rounded"
+              >
+                <div className="profile-pic-box">
+                  {data && data[0]?.profile_image_link ? (
+                    <img
+                      src={data[0]?.profile_image_link}
+                      alt="profile"
+                      className={`place-content-center w-full h-full ${
+                        results.isLoading ? "animate-pulse" : ""
+                      }`}
+                    />
+                  ) : (
+                    <button
+                      className={`w-full h-full font-bold max-[640px]:text-xs
+                  ${results.isLoading ? "animate-pulse" : ""}`}
+                      style={isDragging ? { color: "red" } : null}
+                      onClick={onImageUpload}
+                      {...dragProps}
+                    >
+                      Click/Drag image here to upload
+                      <CgProfile className="place-content-center w-full h-1/4" />
+                    </button>
+                  )}
+                </div>
+                <div className="profile-pic-button">
                   <button
-                    className="w-full h-full font-bold max-[640px]:text-xs"
+                    className={`${
+                      results.isLoading
+                        ? "bg-gray-100 text-white"
+                        : "bg-gray-200"
+                    } border-2 rounded border-black text-xs w-fit h-fit mb-2 max-[820px]:mb-0 lg:mr-2 md:mr-1 max-[640px]:text-xs`}
+                    disabled={results.isLoading}
                     style={isDragging ? { color: "red" } : null}
-                    onClick={onImageUpload}
+                    onClick={() => onImageUpdate(0)}
                     {...dragProps}
                   >
-                    Click to upload and click save button underneath
-                    <CgProfile className="place-content-center w-full h-2/3" />
+                    Upload
                   </button>
-                ) : (
-                  <img
-                    src={image[0].data_url}
-                    alt="profile"
-                    className="place-content-center w-full h-full"
-                  />
-                )}
+                  <button
+                    className={`${
+                      results.isLoading
+                        ? "bg-gray-100 text-white"
+                        : "bg-gray-200"
+                    } border-2 rounded bg-gray-200 border-black text-xs w-fit h-fit mb-2 max-[640px]:text-xs`}
+                    disabled={results.isLoading}
+                    style={isDragging ? { color: "red" } : null}
+                    onClick={() =>
+                      saveUserProfile({
+                        edenUser: {
+                          userId: authUserId,
+                          profile_image_link: "",
+                        },
+                      })
+                    }
+                    {...dragProps}
+                  >
+                    Delete
+                  </button>
+                </div>
               </CardHeader>
-              <CardBody className="font-bold text-sm overflow-auto w-full">
-                <button
-                  className=" border-2 rounded bg-gray-200 border-black text-xs w-fit h-fit mb-2 sm:mr-2 lg:mr-2 md:mr-2 max-[640px]:text-xs"
-                  style={isDragging ? { color: "red" } : null}
-                  onClick={() => console.log("save profile pic")}
-                  {...dragProps}
-                >
-                  Save
-                </button>
-                <button
-                  className="border-2 rounded bg-gray-200 border-black text-xs w-fit h-fit mb-2 lg:mr-2 md:mr-2 max-[640px]:text-xs"
-                  style={isDragging ? { color: "red" } : null}
-                  onClick={() => onImageUpdate(0)}
-                  {...dragProps}
-                >
-                  Update
-                </button>
-                <button
-                  className="border-2 rounded bg-gray-200 border-black text-xs w-fit h-fit mb-2 max-[640px]:text-xs"
-                  style={isDragging ? { color: "red" } : null}
-                  onClick={() => onImageRemove(0)}
-                  {...dragProps}
-                >
-                  Delete
-                </button>
-                <div className="max-[640px]:text-xs">Name: Marcia Moss</div>
-                <div className="max-[640px]:text-xs">Location: Raleigh, NC</div>
-                {/* <div className="max-[640px]:text-xs">
-                  Me: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Ut sed nunc iaculis, tristique est sit amet, aliquam nisl.
-                  Maecenas posuere ligula at arcu dapibus luctus. Sed sagittis,
-                  elit at auctor imperdiet, diam leo finibus erat, ac fringilla
-                  metus nam.
-                </div> */}
+              <CardBody className="profile-pic-body font-bold text-sm overflow-auto w-full ">
+                <div className="max-[640px]:text-xs">
+                  {data && data[0]?.name
+                    ? data[0]?.name
+                    : "Name: Not yet added, update profile"}
+                </div>
+                <div className="max-[640px]:text-xs">
+                  {data && data[0]?.location
+                    ? data[0]?.location
+                    : "Location: Not yet added, update profile"}
+                </div>
               </CardBody>
             </>
           )}
         </ImageUploading>
-        <CardFooter className="text-center text-black font-bold mt-1 h-fit">
+        <CardFooter className="profile-pic-footer text-center text-black font-bold mt-1 h-fit">
           <button
             onClick={() => setShowProfileUpdate(true)}
             className="border-2 rounded bg-gray-200 border-black text-sm w-fit h-fit"
@@ -109,16 +143,15 @@ const Profile = () => {
         </CardFooter>
       </Card>
 
-      <div className="tree-container">
+      <div className="tree-container border-2 border-gray-200">
         <TreeUpload />
       </div>
       <div className="about">
         {" "}
         <div className="max-[640px]:text-xs p-2">
-          About Marcia: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          Ut sed nunc iaculis, tristique est sit amet, aliquam nisl. Maecenas
-          posuere ligula at arcu dapibus luctus. Sed sagittis, elit at auctor
-          imperdiet, diam leo finibus erat, ac fringilla metus nam.
+          {data && data[0]?.bio
+            ? `Bit about me: ${data[0]?.bio}`
+            : "Bit about me: Not yet added, update profile"}
         </div>
       </div>
 

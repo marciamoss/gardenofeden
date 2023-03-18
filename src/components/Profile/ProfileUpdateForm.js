@@ -1,10 +1,18 @@
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useSelector } from "react-redux";
+import { useSaveUserProfileMutation } from "../../store";
 
 const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [bio, setBio] = useState("");
+  const [saveUserProfile] = useSaveUserProfileMutation();
+  const { authUserId } = useSelector((state) => {
+    return {
+      authUserId: state.authData.authUserId,
+    };
+  });
 
   return (
     <>
@@ -93,8 +101,15 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                           !name && !location && !bio ? "bg-slate-400" : ""
                         } inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                         onClick={() => {
-                          console.log("submit clicked");
                           setShowProfileUpdate(false);
+                          saveUserProfile({
+                            edenUser: {
+                              userId: authUserId,
+                              name,
+                              location,
+                              bio,
+                            },
+                          });
                         }}
                       >
                         Submit

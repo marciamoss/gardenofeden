@@ -1,3 +1,7 @@
+exports.mongo = {
+  api: process.env.REACT_APP_BASE_URL,
+};
+
 exports.maps = {
   apiKey: process.env.REACT_APP_MAPS_API_KEY,
 };

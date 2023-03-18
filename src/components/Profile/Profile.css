@@ -7,7 +7,7 @@
   font-family: sans-serif;
   background-color: rgb(197, 240, 197);
   height: 70vh;
-  width: 25%;
+  width: 20%;
   float: left;
   margin-top: 2%;
   margin-left: 2%;
@@ -19,7 +19,7 @@
   color: white;
   background-color: rgba(8, 10, 1, 0.064);
   height: 60vh;
-  width: 70%;
+  width: 75%;
   float: right;
   margin-top: 2%;
   margin-right: 2%;
@@ -33,10 +33,31 @@
   color: black;
   background-color: rgb(197, 240, 197);
   height: 10vh;
-  width: 70%;
+  width: 75%;
   float: right;
   margin-top: 2%;
   margin-right: 2%;
   overflow: scroll;
   border-radius: 25px;
+}
+.profile-pic-header {
+  height: 45%;
+}
+
+.profile-pic-box {
+  height: 70%;
+}
+.profile-pic-button {
+  height: 30%;
+  padding: 10%;
+  background-color: rgb(197, 240, 197);
+}
+
+.profile-pic-body {
+  height: 30%;
+  padding: 10%;
+}
+.profile-pic-footer {
+  height: 25%;
+  padding: 10%;
 }
