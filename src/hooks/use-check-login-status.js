@@ -7,8 +7,15 @@ const useCheckLoginStatus = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const authUserId = localStorage.getItem("gardenofeden")
+    ? JSON.parse(localStorage.getItem("gardenofeden")).authUserId
+    : "";
+  const userEmail = localStorage.getItem("gardenofeden")
+    ? JSON.parse(localStorage.getItem("gardenofeden")).userEmail
+    : "";
+
   useEffect(() => {
-    if (!JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId) {
+    if (!authUserId) {
       dispatch(
         authDataInfo({
           showProfile: false,
@@ -17,10 +24,17 @@ const useCheckLoginStatus = () => {
           loggedOutMessage: true,
         })
       );
-
       navigate("");
+    } else {
+      dispatch(
+        authDataInfo({
+          signedIn: true,
+          authUserId,
+          userEmail,
+        })
+      );
     }
-  });
+  }, [authUserId, dispatch, navigate]);
 };
 
 export default useCheckLoginStatus;

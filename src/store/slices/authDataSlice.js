@@ -6,6 +6,8 @@ const initialState = {
     : false,
   authUserId:
     JSON.parse(localStorage.getItem("gardenofeden"))?.authUserId || null,
+  userEmail:
+    JSON.parse(localStorage.getItem("gardenofeden"))?.userEmail || null,
   showWelcomeMessage: JSON.parse(localStorage.getItem("gardenofeden"))
     ?.authUserId
     ? true

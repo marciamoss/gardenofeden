@@ -10,6 +10,9 @@ const SigninModal = () => {
   const [signedUp] = useState(
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
   );
+  const [userEmail] = useState(
+    JSON.parse(window.localStorage.getItem("gardenofeden"))?.userEmail
+  );
   const [logIn] = useLogInMutation();
   const { showSignin } = useSelector((state) => {
     return {
@@ -82,7 +85,7 @@ const SigninModal = () => {
                     className="text-lg font-serif font-medium leading-6 text-center"
                   >
                     {signedUp
-                      ? `You are already signed in as ${signedUp}, logout from this account if you want to login into a different account`
+                      ? `You are signed in as ${userEmail}, logout from this account if you want to login into a different account`
                       : "Sign Up/In"}
                   </Dialog.Title>
                   {!signedUp ? (

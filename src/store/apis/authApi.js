@@ -54,6 +54,7 @@ const authApi = createApi({
                 authDataInfo({
                   signedIn: false,
                   authUserId: null,
+                  userEmail: null,
                   showError: true,
                   errorMessage,
                   showWelcomeMessage: false,
@@ -74,6 +75,7 @@ const authApi = createApi({
                 authDataInfo({
                   signedIn: false,
                   authUserId: null,
+                  userEmail: null,
                   showError: false,
                   errorMessage: null,
                   emailConfirm: true,
@@ -100,6 +102,7 @@ const authApi = createApi({
                   authDataInfo({
                     signedIn: true,
                     authUserId: result.user.uid,
+                    userEmail: result.user.email,
                     showError: false,
                     errorMessage: null,
                     showWelcomeMessage: true,
@@ -110,6 +113,7 @@ const authApi = createApi({
                   "gardenofeden",
                   JSON.stringify({
                     authUserId: result.user.uid,
+                    userEmail: result.user.email,
                   })
                 );
               }
@@ -125,6 +129,7 @@ const authApi = createApi({
                 authDataInfo({
                   signedIn: false,
                   authUserId: null,
+                  userEmail: null,
                   showError: true,
                   errorMessage,
                   showWelcomeMessage: false,
@@ -145,6 +150,7 @@ const authApi = createApi({
                 authDataInfo({
                   signedIn: false,
                   authUserId: null,
+                  userEmail: null,
                   showError: false,
                   errorMessage: null,
                   showWelcomeMessage: false,
