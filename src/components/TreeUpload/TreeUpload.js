@@ -17,7 +17,7 @@ const TreeUpload = () => {
       onChange={onChange}
       maxNumber={maxNumber}
       dataURLKey="data_url"
-      acceptType={["jpg"]}
+      acceptType={["jpg", "png", "gif"]}
     >
       {({
         imageList,
