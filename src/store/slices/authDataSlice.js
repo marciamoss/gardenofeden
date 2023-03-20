@@ -17,6 +17,10 @@ const initialState = {
   emailSent: false,
   showProfile: false,
   loggedOutMessage: false,
+  showMenu: false,
+  showSignin: false,
+  showAbout: false,
+  showWorks: false,
 };
 const authDataSlice = createSlice({
   name: "authData",

@@ -1,21 +1,35 @@
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useLogInMutation } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
+import { useLogInMutation, authDataInfo } from "../../store";
 import { MdClose } from "react-icons/md";
 
-const SigninModal = ({ showSignin, setShowSignin }) => {
+const SigninModal = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [signedUp] = useState(
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
   );
   const [logIn] = useLogInMutation();
+  const { showSignin } = useSelector((state) => {
+    return {
+      showSignin: state.authData.showSignin,
+    };
+  });
   return (
     <>
       <Transition appear show={showSignin} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setShowSignin(false)}
+          onClose={() => {
+            dispatch(
+              authDataInfo({
+                showMenu: false,
+                showSignin: false,
+              })
+            );
+          }}
         >
           <Transition.Child
             as={Fragment}
@@ -50,7 +64,12 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                       type="button"
                       className="absolute right-0 top-0 p-2 outline-none"
                       onClick={() => {
-                        setShowSignin(false);
+                        dispatch(
+                          authDataInfo({
+                            showMenu: false,
+                            showSignin: false,
+                          })
+                        );
                       }}
                     >
                       <MdClose size={25} />
@@ -71,7 +90,12 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                       onSubmit={(event) => {
                         event.preventDefault();
                         if (email) {
-                          setShowSignin(false);
+                          dispatch(
+                            authDataInfo({
+                              showMenu: false,
+                              showSignin: false,
+                            })
+                          );
                           logIn({ email });
                         }
                       }}
@@ -96,7 +120,12 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                             !email ? "bg-slate-400" : ""
                           } inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                           onClick={() => {
-                            setShowSignin(false);
+                            dispatch(
+                              authDataInfo({
+                                showMenu: false,
+                                showSignin: false,
+                              })
+                            );
                             logIn({ email });
                           }}
                         >
@@ -105,7 +134,14 @@ const SigninModal = ({ showSignin, setShowSignin }) => {
                         <button
                           type="button"
                           className="inline-flex float-right justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                          onClick={() => setShowSignin(false)}
+                          onClick={() => {
+                            dispatch(
+                              authDataInfo({
+                                showMenu: false,
+                                showSignin: false,
+                              })
+                            );
+                          }}
                         >
                           Cancel
                         </button>

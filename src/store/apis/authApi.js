@@ -95,11 +95,11 @@ const authApi = createApi({
         queryFn: async ({ email }, { dispatch }) => {
           signInWithEmailLink(auth, email, window.location.href)
             .then((result) => {
-              if (result.user.email) {
+              if (result.user.uid) {
                 dispatch(
                   authDataInfo({
                     signedIn: true,
-                    authUserId: result.user.email,
+                    authUserId: result.user.uid,
                     showError: false,
                     errorMessage: null,
                     showWelcomeMessage: true,
@@ -109,7 +109,7 @@ const authApi = createApi({
                 localStorage.setItem(
                   "gardenofeden",
                   JSON.stringify({
-                    authUserId: result.user.email,
+                    authUserId: result.user.uid,
                   })
                 );
               }
@@ -137,7 +137,7 @@ const authApi = createApi({
         },
       }),
       logOut: builder.mutation({
-        queryFn: async ({ email }, { dispatch }) => {
+        queryFn: async ({ uid }, { dispatch }) => {
           signOut(auth)
             .then((response) => {
               window.localStorage.removeItem("gardenofeden");

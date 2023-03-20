@@ -1,14 +1,29 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { authDataInfo } from "../../store";
 
-const HowItWorksModal = ({ showWorks, setShowWorks }) => {
+const HowItWorksModal = () => {
+  const dispatch = useDispatch();
+  const { showWorks } = useSelector((state) => {
+    return {
+      showWorks: state.authData.showWorks,
+    };
+  });
   return (
     <>
       <Transition appear show={showWorks} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setShowWorks(false)}
+          onClose={() => {
+            dispatch(
+              authDataInfo({
+                showMenu: false,
+                showWorks: false,
+              })
+            );
+          }}
         >
           <Transition.Child
             as={Fragment}
@@ -82,7 +97,14 @@ const HowItWorksModal = ({ showWorks, setShowWorks }) => {
                     <button
                       type="button"
                       className="inline-flex justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() => setShowWorks(false)}
+                      onClick={() => {
+                        dispatch(
+                          authDataInfo({
+                            showMenu: false,
+                            showWorks: false,
+                          })
+                        );
+                      }}
                     >
                       Got it, thanks!
                     </button>

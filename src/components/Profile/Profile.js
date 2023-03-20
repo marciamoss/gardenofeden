@@ -12,6 +12,7 @@ import { CgProfile } from "react-icons/cg";
 import TreeUpload from "../TreeUpload/TreeUpload";
 import ProfileUpdateForm from "./ProfileUpdateForm";
 import { useSaveUserProfileMutation, useFetchUserQuery } from "../../store";
+import useCheckLoginStatus from "../../hooks/use-check-login-status";
 
 const Profile = () => {
   const [image, setImage] = React.useState([]);
@@ -33,7 +34,7 @@ const Profile = () => {
   });
   const [saveUserProfile, results] = useSaveUserProfileMutation();
   const { data } = useFetchUserQuery(authUserId);
-
+  useCheckLoginStatus();
   return (
     <div
       id="profile"

@@ -1,52 +1,25 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLogOutMutation, authDataInfo } from "../../store";
-import AboutModal from "../About/AboutModal";
-import HowItWorksModal from "../HowItWorks/HowItWorksModal";
-import SigninModal from "../Signin/SigninModal";
 import "./MenuDropDown.css";
 import { Menu, Transition } from "@headlessui/react";
 import { CgProfile } from "react-icons/cg";
-import MessageModal from "../Message/MessageModal";
 
-const MenuDropDown = ({ menuClicked }) => {
+const MenuDropDown = () => {
   const dispatch = useDispatch();
   const [logOut] = useLogOutMutation();
-  const [showAbout, setShowAbout] = useState(false);
-  const [showWorks, setShowWorks] = useState(false);
-  const [showSignin, setShowSignin] = useState(false);
-  const { authUserId, showProfile, loggedOutMessage } = useSelector((state) => {
+  const { authUserId } = useSelector((state) => {
     return {
       authUserId: state.authData.authUserId,
-      showProfile: state.authData.showProfile,
-      loggedOutMessage: state.authData.loggedOutMessage,
     };
   });
-  const [signedIn, setSignedIn] = useState(
+
+  const [signedIn] = useState(
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
       ? true
       : false
   );
 
-  useEffect(() => {
-    setSignedIn(
-      JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
-        ? true
-        : false
-    );
-    if (!signedIn) {
-      dispatch(
-        authDataInfo({
-          signedIn: false,
-          authUserId: null,
-          showError: false,
-          errorMessage: null,
-          showWelcomeMessage: false,
-          loggedOutMessage: showProfile ? true : false,
-        })
-      );
-    }
-  }, [signedIn, menuClicked, dispatch, showProfile]);
   return (
     <>
       <Transition
@@ -68,13 +41,14 @@ const MenuDropDown = ({ menuClicked }) => {
                       className={`${
                         active ? "bg-violet-500 text-white" : "text-gray-900"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                      onClick={() =>
+                      onClick={() => {
                         dispatch(
                           authDataInfo({
                             showProfile: true,
+                            showMenu: false,
                           })
-                        )
-                      }
+                        );
+                      }}
                     >
                       <CgProfile size={20} className="mr-1" />
                       Profile
@@ -87,7 +61,14 @@ const MenuDropDown = ({ menuClicked }) => {
                       className={`${
                         active ? "bg-violet-500 text-white" : "text-gray-900"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                      onClick={() => logOut({ email: authUserId })}
+                      onClick={() => {
+                        dispatch(
+                          authDataInfo({
+                            showMenu: false,
+                          })
+                        );
+                        logOut({ uid: authUserId });
+                      }}
                     >
                       Logout
                     </button>
@@ -101,7 +82,13 @@ const MenuDropDown = ({ menuClicked }) => {
                     className={`${
                       active ? "bg-violet-500 text-white" : "text-gray-900"
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                    onClick={() => setShowSignin(true)}
+                    onClick={() =>
+                      dispatch(
+                        authDataInfo({
+                          showSignin: true,
+                        })
+                      )
+                    }
                   >
                     Sign Up/In
                   </button>
@@ -114,7 +101,13 @@ const MenuDropDown = ({ menuClicked }) => {
                   className={`${
                     active ? "bg-violet-500 text-white" : "text-gray-900"
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                  onClick={() => setShowAbout(true)}
+                  onClick={() => {
+                    dispatch(
+                      authDataInfo({
+                        showAbout: true,
+                      })
+                    );
+                  }}
                 >
                   About
                 </button>
@@ -126,7 +119,13 @@ const MenuDropDown = ({ menuClicked }) => {
                   className={`${
                     active ? "bg-violet-500 text-white" : "text-gray-900"
                   } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold`}
-                  onClick={() => setShowWorks(true)}
+                  onClick={() =>
+                    dispatch(
+                      authDataInfo({
+                        showWorks: true,
+                      })
+                    )
+                  }
                 >
                   How it works
                 </button>
@@ -135,37 +134,6 @@ const MenuDropDown = ({ menuClicked }) => {
           </div>
         </Menu.Items>
       </Transition>
-      {showAbout ? (
-        <AboutModal showAbout={showAbout} setShowAbout={setShowAbout} />
-      ) : (
-        ""
-      )}
-      {showWorks ? (
-        <HowItWorksModal showWorks={showWorks} setShowWorks={setShowWorks} />
-      ) : (
-        ""
-      )}
-      {showSignin ? (
-        <SigninModal showSignin={showSignin} setShowSignin={setShowSignin} />
-      ) : (
-        ""
-      )}
-
-      {loggedOutMessage ? (
-        <MessageModal
-          showModal={loggedOutMessage}
-          dispatchType={() => {
-            setShowSignin(true);
-            dispatch(
-              authDataInfo({ showProfile: false, loggedOutMessage: false })
-            );
-          }}
-          message={`You have been logged out from another session on this window, Login again`}
-          modalColor={"bg-orange-900"}
-        />
-      ) : (
-        ""
-      )}
     </>
   );
 };
