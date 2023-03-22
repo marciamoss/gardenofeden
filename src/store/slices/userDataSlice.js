@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   image: "",
+  imageType: "",
+  noGeoData: false,
   imageUploadError: false,
   imageUploadErrorMessage: "",
   profileUpdateError: "",

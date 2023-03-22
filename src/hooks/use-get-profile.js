@@ -1,7 +1,7 @@
 import { useFetchUserQuery } from "../store";
 
 const useGetProfile = ({ authUserId }) => {
-  const { data, isFetching } = useFetchUserQuery(authUserId);
+  const { data, isFetching, isLoading } = useFetchUserQuery(authUserId);
   let name,
     location,
     bio,
@@ -12,7 +12,7 @@ const useGetProfile = ({ authUserId }) => {
     bio = data[0]?.bio;
     profile_image_link = data[0]?.profile_image_link;
   }
-  return [name, location, bio, profile_image_link, isFetching];
+  return [name, location, bio, profile_image_link, isFetching, isLoading];
 };
 
 export default useGetProfile;

@@ -15,15 +15,20 @@ const imageProcessingApi = createApi({
   endpoints(builder) {
     return {
       openImageUploader: builder.mutation({
-        queryFn: async ({ authUserId }, { dispatch }) => {
+        queryFn: async ({ authUserId, imageType }, { dispatch }) => {
           try {
             client
               .picker({
                 accept: ["jpg", "png", "gif"],
+                cleanupImageExif: false,
                 onUploadDone: (res) => {
                   dispatch(
                     userDataInfo({
-                      image: { image: res.filesUploaded[0], authUserId },
+                      image: {
+                        image: res.filesUploaded[0],
+                        authUserId,
+                        imageType,
+                      },
                     })
                   );
                 },
@@ -89,7 +94,7 @@ const imageProcessingApi = createApi({
           }
           return {
             data: {
-              profile_image_link: upload.url,
+              image_link: upload.url,
               latitude,
               longitude,
               authUserId,

@@ -5,6 +5,7 @@ import {
   useOpenImageUploaderMutation,
   useGetImageGeoLocationMutation,
   useSaveUserProfileMutation,
+  useSaveUserTreesMutation,
 } from "../store";
 
 const useImageUpload = () => {
@@ -12,9 +13,8 @@ const useImageUpload = () => {
   const [getImageGeoLocation, geoLocationResult] =
     useGetImageGeoLocationMutation();
   const [saveUserProfile, saveUserImageResult] = useSaveUserProfileMutation();
-  const [openImageUploader] = useOpenImageUploaderMutation({
-    userDataInfo,
-  });
+  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
+  const [openImageUploader] = useOpenImageUploaderMutation();
 
   const { image } = useSelector((state) => {
     return {
@@ -22,10 +22,18 @@ const useImageUpload = () => {
     };
   });
   useEffect(() => {
-    if (image) {
+    if (image && image.imageType === "trees") {
       getImageGeoLocation({
         authUserId: image.authUserId,
         upload: image.image,
+        imageType: image.imageType,
+      });
+    } else if (image && image.imageType === "user") {
+      saveUserProfile({
+        edenUser: {
+          userId: image.authUserId,
+          profile_image_link: image.image.url,
+        },
       });
     }
   }, [image, getImageGeoLocation]);
@@ -39,14 +47,22 @@ const useImageUpload = () => {
         })
       );
     } else if (geoLocationResult.data) {
-      saveUserProfile({
-        edenUser: {
-          userId: geoLocationResult.data.authUserId,
-          profile_image_link: geoLocationResult.data.profile_image_link,
-          latitude: geoLocationResult.data.latitude,
-          longitude: geoLocationResult.data.longitude,
-        },
-      });
+      if (geoLocationResult.data.latitude && geoLocationResult.data.longitude) {
+        saveUserTrees({
+          edenUserTrees: {
+            userId: geoLocationResult.data.authUserId,
+            tree_image_link: geoLocationResult.data.image_link,
+            latitude: geoLocationResult.data.latitude,
+            longitude: geoLocationResult.data.longitude,
+          },
+        });
+      } else {
+        dispatch(
+          userDataInfo({
+            noGeoData: true,
+          })
+        );
+      }
     }
   }, [geoLocationResult, dispatch, saveUserProfile]);
 
@@ -55,13 +71,22 @@ const useImageUpload = () => {
       dispatch(
         userDataInfo({
           imageUploadError: true,
-          imageUploadErrorMessage: saveUserImageResult.error.message,
         })
       );
     }
   }, [saveUserImageResult, dispatch]);
 
-  return [openImageUploader, saveUserImageResult];
+  useEffect(() => {
+    if (saveUserTreeResult.error) {
+      dispatch(
+        userDataInfo({
+          imageUploadError: true,
+        })
+      );
+    }
+  }, [saveUserTreeResult, dispatch]);
+
+  return [openImageUploader, saveUserImageResult, saveUserTreeResult];
 };
 
 export default useImageUpload;

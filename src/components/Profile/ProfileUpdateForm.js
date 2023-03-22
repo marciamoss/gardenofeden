@@ -3,11 +3,12 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { useSaveProfile } from "../../hooks";
 import { userDataInfo } from "../../store";
+
 const ProfileUpdateForm = ({ name, location, bio }) => {
   const dispatch = useDispatch();
-  const [formName, setFormName] = useState(name);
-  const [formLocation, setFormLocation] = useState(location);
-  const [formBio, setFormBio] = useState(bio);
+  const [updatedName, setUpdatedName] = useState(name || "");
+  const [updatedLocation, setUpdatedLocation] = useState(location || "");
+  const [updatedBio, setUpdatedBio] = useState(bio || "");
   const [saveUserProfile] = useSaveProfile();
   const { authUserId, showProfileUpdateForm } = useSelector((state) => {
     return {
@@ -75,9 +76,9 @@ const ProfileUpdateForm = ({ name, location, bio }) => {
                         type="text"
                         className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Name"
-                        value={formName}
+                        value={updatedName}
                         onChange={(event) => {
-                          setFormName(event.target.value);
+                          setUpdatedName(event.target.value);
                         }}
                       />
                     </div>
@@ -86,9 +87,9 @@ const ProfileUpdateForm = ({ name, location, bio }) => {
                         type="text"
                         className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Location"
-                        value={formLocation}
+                        value={updatedLocation}
                         onChange={(event) => {
-                          setFormLocation(event.target.value);
+                          setUpdatedLocation(event.target.value);
                         }}
                       />
                     </div>
@@ -97,10 +98,10 @@ const ProfileUpdateForm = ({ name, location, bio }) => {
                         type="text"
                         className="h-40 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="About Me (limit 250 characters)"
-                        value={formBio}
+                        value={updatedBio}
                         maxLength="250"
                         onChange={(event) => {
-                          setFormBio(event.target.value);
+                          setUpdatedBio(event.target.value);
                         }}
                       />
                     </div>
@@ -108,17 +109,21 @@ const ProfileUpdateForm = ({ name, location, bio }) => {
                     <div className="mt-4">
                       <button
                         type="button"
-                        disabled={!name && !location && !bio}
+                        disabled={
+                          !updatedName && !updatedLocation && !updatedBio
+                        }
                         className={`${
-                          !name && !location && !bio ? "bg-slate-400" : ""
+                          !updatedName && !updatedLocation && !updatedBio
+                            ? "bg-slate-400"
+                            : ""
                         } inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                         onClick={() => {
                           saveUserProfile({
                             edenUser: {
                               userId: authUserId,
-                              name: formName,
-                              location: formLocation,
-                              bio: formBio,
+                              name: updatedName,
+                              location: updatedLocation,
+                              bio: updatedBio,
                             },
                           });
                         }}

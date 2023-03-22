@@ -26,11 +26,13 @@ const Profile = () => {
       showProfileUpdateForm: state.userData.showProfileUpdateForm,
     };
   });
-  const [name, location, bio, profile_image_link, isFetching] = useGetProfile({
-    authUserId,
-  });
+  const [name, location, bio, profile_image_link, isFetching, isLoading] =
+    useGetProfile({
+      authUserId,
+    });
   const [saveUserProfile, saveUserResult] = useSaveProfile();
-  const [openImageUploader, saveUserImageResult] = useImageUpload();
+  const [openImageUploader, saveUserImageResult, saveUserTreeResult] =
+    useImageUpload();
 
   useCheckLoginStatus();
 
@@ -41,7 +43,11 @@ const Profile = () => {
     >
       <Card className="profile-pic">
         <CardHeader floated={false} className="profile-pic-header m-2">
-          <div className="profile-pic-box border-2 border-white">
+          <div
+            className={`${
+              isLoading ? "animate-pulse bg-stone-900" : ""
+            } profile-pic-box border-2 border-white`}
+          >
             {profile_image_link ? (
               <img
                 src={profile_image_link}
@@ -53,7 +59,11 @@ const Profile = () => {
                 }`}
               />
             ) : (
-              <CgProfile className="place-content-center w-full h-full h-1/4" />
+              <CgProfile
+                className={`${
+                  isLoading ? "hidden" : ""
+                } place-content-center w-full h-full h-1/4`}
+              />
             )}
           </div>
           <div className="profile-pic-button">
@@ -63,7 +73,9 @@ const Profile = () => {
                 disabled={
                   saveUserImageResult.status === "pending" || isFetching
                 }
-                onClick={() => openImageUploader({ authUserId })}
+                onClick={() =>
+                  openImageUploader({ authUserId, imageType: "user" })
+                }
               >
                 Upload
               </button>
@@ -115,7 +127,10 @@ const Profile = () => {
       </Card>
 
       <div className="tree-container border-2 border-gray-200">
-        <TreeUpload />
+        <TreeUpload
+          authUserId={authUserId}
+          openImageUploader={openImageUploader}
+        />
       </div>
 
       <div className="about max-[640px]:text-xs p-2">

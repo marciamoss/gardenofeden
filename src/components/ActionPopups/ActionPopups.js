@@ -25,6 +25,7 @@ const ActionPopups = () => {
     imageUploadErrorMessage,
     profileUpdateError,
     profileUpdateErrorMessage,
+    noGeoData,
   } = useSelector((state) => {
     return {
       showError: state.authData.showError,
@@ -41,6 +42,7 @@ const ActionPopups = () => {
       imageUploadErrorMessage: state.userData.imageUploadErrorMessage,
       profileUpdateError: state.userData.profileUpdateError,
       profileUpdateErrorMessage: state.userData.profileUpdateErrorMessage,
+      noGeoData: state.userData.noGeoData,
     };
   });
 
@@ -130,7 +132,7 @@ const ActionPopups = () => {
             dispatchType={() => {
               dispatch(userDataInfo({ imageUploadError: false }));
             }}
-            message={`Image upload failed, Reason: ${imageUploadErrorMessage}`}
+            message={`Image upload failed at this time`}
             modalColor={"bg-orange-900"}
           />
         ) : (
@@ -145,6 +147,20 @@ const ActionPopups = () => {
               dispatch(userDataInfo({ profileUpdateError: false }));
             }}
             message={`Profile update failed, Reason: ${profileUpdateErrorMessage}`}
+            modalColor={"bg-orange-900"}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {noGeoData ? (
+          <MessageModal
+            showModal={noGeoData}
+            dispatchType={() => {
+              dispatch(userDataInfo({ noGeoData: false }));
+            }}
+            message={`No Location data availabele in the image, working on manually adding the location. But for now only accepting images with geolocation exif data`}
             modalColor={"bg-orange-900"}
           />
         ) : (
