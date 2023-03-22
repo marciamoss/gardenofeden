@@ -17,7 +17,7 @@ const userTreesApi = createApi({
         },
         query: ({ edenUserTrees }) => {
           return {
-            url: "/api/eden//userTreesSave",
+            url: "/api/eden/userTreesSave",
             method: "POST",
             body: {
               edenUserTrees,

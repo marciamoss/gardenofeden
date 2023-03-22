@@ -160,7 +160,7 @@ const ActionPopups = () => {
             dispatchType={() => {
               dispatch(userDataInfo({ noGeoData: false }));
             }}
-            message={`No Location data availabele in the image, working on manually adding the location. But for now only accepting images with geolocation exif data`}
+            message={`No Location data available in the image, working on adding the location by address. For now only accepting images with geolocation exif data`}
             modalColor={"bg-orange-900"}
           />
         ) : (
