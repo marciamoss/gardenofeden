@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { authDataInfo } from "../../store";
+import { authDataInfo, userDataInfo } from "../../store";
 import SigninEmailConfirmModal from "../Signin/SigninEmailConfirmModal";
 import MessageModal from "../Message/MessageModal";
 import SigninModal from "../Signin/SigninModal";
@@ -21,6 +21,10 @@ const ActionPopups = () => {
     showSignin,
     showAbout,
     showWorks,
+    imageUploadError,
+    imageUploadErrorMessage,
+    profileUpdateError,
+    profileUpdateErrorMessage,
   } = useSelector((state) => {
     return {
       showError: state.authData.showError,
@@ -33,6 +37,10 @@ const ActionPopups = () => {
       showSignin: state.authData.showSignin,
       showAbout: state.authData.showAbout,
       showWorks: state.authData.showWorks,
+      imageUploadError: state.userData.imageUploadError,
+      imageUploadErrorMessage: state.userData.imageUploadErrorMessage,
+      profileUpdateError: state.userData.profileUpdateError,
+      profileUpdateErrorMessage: state.userData.profileUpdateErrorMessage,
     };
   });
 
@@ -115,6 +123,34 @@ const ActionPopups = () => {
       <>{showAbout ? <AboutModal /> : ""}</>
       <>{showWorks ? <HowItWorksModal /> : ""}</>
       <>{showSignin ? <SigninModal /> : ""}</>
+      <>
+        {imageUploadError ? (
+          <MessageModal
+            showModal={imageUploadError}
+            dispatchType={() => {
+              dispatch(userDataInfo({ imageUploadError: false }));
+            }}
+            message={`Image upload failed, Reason: ${imageUploadErrorMessage}`}
+            modalColor={"bg-orange-900"}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {profileUpdateError ? (
+          <MessageModal
+            showModal={profileUpdateError}
+            dispatchType={() => {
+              dispatch(userDataInfo({ profileUpdateError: false }));
+            }}
+            message={`Profile update failed, Reason: ${profileUpdateErrorMessage}`}
+            modalColor={"bg-orange-900"}
+          />
+        ) : (
+          ""
+        )}
+      </>
     </>
   );
 };

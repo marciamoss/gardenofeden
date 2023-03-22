@@ -5,7 +5,7 @@
 }
 .profile-pic {
   font-family: sans-serif;
-  background-color: rgb(197, 240, 197);
+  background-color: #d6d3d1;
   height: 70vh;
   width: 20%;
   float: left;
@@ -31,7 +31,7 @@
   font-family: sans-serif;
   text-align: center;
   color: black;
-  background-color: rgb(197, 240, 197);
+  background-color: #d6d3d1;
   height: 10vh;
   width: 75%;
   float: right;
@@ -41,7 +41,7 @@
   border-radius: 25px;
 }
 .profile-pic-header {
-  height: 45%;
+  height: 55%;
 }
 
 .profile-pic-box {
@@ -49,15 +49,14 @@
 }
 .profile-pic-button {
   height: 30%;
-  padding: 10%;
-  background-color: rgb(197, 240, 197);
+  background-color: #d6d3d1;
 }
 
 .profile-pic-body {
-  height: 30%;
+  height: 35%;
   padding: 10%;
 }
 .profile-pic-footer {
-  height: 25%;
-  padding: 10%;
+  height: 10%;
+  padding: 1%;
 }

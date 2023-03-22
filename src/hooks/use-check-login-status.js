@@ -34,7 +34,7 @@ const useCheckLoginStatus = () => {
         })
       );
     }
-  }, [authUserId, dispatch, navigate]);
+  }, [authUserId, dispatch, navigate, userEmail]);
 };
 
 export default useCheckLoginStatus;

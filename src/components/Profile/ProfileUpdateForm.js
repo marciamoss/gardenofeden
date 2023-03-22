@@ -1,26 +1,34 @@
 import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useSelector } from "react-redux";
-import { useSaveUserProfileMutation } from "../../store";
-
-const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [bio, setBio] = useState("");
-  const [saveUserProfile] = useSaveUserProfileMutation();
-  const { authUserId } = useSelector((state) => {
+import { useSelector, useDispatch } from "react-redux";
+import { useSaveProfile } from "../../hooks";
+import { userDataInfo } from "../../store";
+const ProfileUpdateForm = ({ name, location, bio }) => {
+  const dispatch = useDispatch();
+  const [formName, setFormName] = useState(name);
+  const [formLocation, setFormLocation] = useState(location);
+  const [formBio, setFormBio] = useState(bio);
+  const [saveUserProfile] = useSaveProfile();
+  const { authUserId, showProfileUpdateForm } = useSelector((state) => {
     return {
       authUserId: state.authData.authUserId,
+      showProfileUpdateForm: state.userData.showProfileUpdateForm,
     };
   });
 
   return (
     <>
-      <Transition appear show={showProfileUpdate} as={Fragment}>
+      <Transition appear show={showProfileUpdateForm} as={Fragment}>
         <Dialog
           as="div"
           className="relative z-10"
-          onClose={() => setShowProfileUpdate(false)}
+          onClose={() =>
+            dispatch(
+              userDataInfo({
+                showProfileUpdateForm: false,
+              })
+            )
+          }
         >
           <Transition.Child
             as={Fragment}
@@ -55,7 +63,11 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                   <form
                     onSubmit={(event) => {
                       event.preventDefault();
-                      setShowProfileUpdate(false);
+                      dispatch(
+                        userDataInfo({
+                          showProfileUpdateForm: false,
+                        })
+                      );
                     }}
                   >
                     <div className="mt-2 font-serif">
@@ -63,9 +75,9 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                         type="text"
                         className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Name"
-                        value={name}
+                        value={formName}
                         onChange={(event) => {
-                          setName(event.target.value);
+                          setFormName(event.target.value);
                         }}
                       />
                     </div>
@@ -74,9 +86,9 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                         type="text"
                         className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Location"
-                        value={location}
+                        value={formLocation}
                         onChange={(event) => {
-                          setLocation(event.target.value);
+                          setFormLocation(event.target.value);
                         }}
                       />
                     </div>
@@ -85,10 +97,10 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                         type="text"
                         className="h-40 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="About Me (limit 250 characters)"
-                        value={bio}
+                        value={formBio}
                         maxLength="250"
                         onChange={(event) => {
-                          setBio(event.target.value);
+                          setFormBio(event.target.value);
                         }}
                       />
                     </div>
@@ -101,13 +113,12 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                           !name && !location && !bio ? "bg-slate-400" : ""
                         } inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                         onClick={() => {
-                          setShowProfileUpdate(false);
                           saveUserProfile({
                             edenUser: {
                               userId: authUserId,
-                              name,
-                              location,
-                              bio,
+                              name: formName,
+                              location: formLocation,
+                              bio: formBio,
                             },
                           });
                         }}
@@ -117,7 +128,13 @@ const ProfileUpdateForm = ({ showProfileUpdate, setShowProfileUpdate }) => {
                       <button
                         type="button"
                         className="inline-flex float-right justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                        onClick={() => setShowProfileUpdate(false)}
+                        onClick={() =>
+                          dispatch(
+                            userDataInfo({
+                              showProfileUpdateForm: false,
+                            })
+                          )
+                        }
                       >
                         Cancel
                       </button>
