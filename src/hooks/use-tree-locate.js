@@ -4,8 +4,7 @@ import { userDataInfo } from "../store";
 
 const useTreeLocate = () => {
   const dispatch = useDispatch();
-  const { userLocation } = useSelector((state) => state.userData);
-
+  const { userLocation, tree } = useSelector((state) => state.userData);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [pinPlace, setPinPlace] = useState(false);
@@ -68,19 +67,30 @@ const useTreeLocate = () => {
   }, [userLocation, geocode]);
 
   useEffect(() => {
-    if (pinPlace) {
+    if (pinPlace || (tree.latitude_exif && tree.longitude_exif)) {
       if (clearClicked) {
         setMarker();
         setClearClicked(false);
       }
       markerRef.current.setPosition({
-        lat: latitude,
-        lng: longitude,
+        lat: latitude ? latitude : tree.latitude_exif ? tree.latitude_exif : "",
+        lng: longitude
+          ? longitude
+          : tree.longitude_exif
+          ? tree.longitude_exif
+          : "",
       });
 
-      mapRef.current.setCenter({ lat: latitude, lng: longitude });
+      mapRef.current.setCenter({
+        lat: latitude ? latitude : tree.latitude_exif ? tree.latitude_exif : "",
+        lng: longitude
+          ? longitude
+          : tree.longitude_exif
+          ? tree.longitude_exif
+          : "",
+      });
     }
-  }, [latitude, longitude, pinPlace, clearClicked]);
+  }, [latitude, longitude, pinPlace, clearClicked, tree]);
 
   return [geocode, clear, latitude, longitude];
 };

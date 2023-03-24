@@ -5,7 +5,6 @@ import {
   useOpenImageUploaderMutation,
   useGetImageGeoLocationMutation,
   useSaveUserProfileMutation,
-  useSaveUserTreesMutation,
 } from "../store";
 
 const useImageUpload = () => {
@@ -13,7 +12,6 @@ const useImageUpload = () => {
   const [getImageGeoLocation, geoLocationResult] =
     useGetImageGeoLocationMutation();
   const [saveUserProfile, saveUserImageResult] = useSaveUserProfileMutation();
-  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
   const [openImageUploader] = useOpenImageUploaderMutation();
   const { image } = useSelector((state) => state.userData);
 
@@ -43,28 +41,23 @@ const useImageUpload = () => {
         })
       );
     } else if (geoLocationResult.data) {
-      if (geoLocationResult.data.latitude && geoLocationResult.data.longitude) {
-        saveUserTrees({
-          edenUserTrees: {
+      dispatch(
+        userDataInfo({
+          showGeoLocate: true,
+          tree: {
             userId: geoLocationResult.data.authUserId,
             tree_image_link: geoLocationResult.data.image_link,
-            latitude: geoLocationResult.data.latitude,
-            longitude: geoLocationResult.data.longitude,
+            latitude_exif: geoLocationResult.data.latitude
+              ? geoLocationResult.data.latitude
+              : null,
+            longitude_exif: geoLocationResult.data.longitude
+              ? geoLocationResult.data.longitude
+              : null,
           },
-        });
-      } else {
-        dispatch(
-          userDataInfo({
-            showGeoLocate: true,
-            tree: {
-              userId: geoLocationResult.data.authUserId,
-              tree_image_link: geoLocationResult.data.image_link,
-            },
-          })
-        );
-      }
+        })
+      );
     }
-  }, [geoLocationResult, dispatch, saveUserTrees]);
+  }, [geoLocationResult, dispatch]);
 
   useEffect(() => {
     if (saveUserImageResult.error) {
@@ -76,17 +69,7 @@ const useImageUpload = () => {
     }
   }, [saveUserImageResult, dispatch]);
 
-  useEffect(() => {
-    if (saveUserTreeResult.error) {
-      dispatch(
-        userDataInfo({
-          imageUploadError: true,
-        })
-      );
-    }
-  }, [saveUserTreeResult, dispatch]);
-
-  return [openImageUploader, saveUserImageResult, saveUserTreeResult];
+  return [openImageUploader, saveUserImageResult];
 };
 
 export default useImageUpload;

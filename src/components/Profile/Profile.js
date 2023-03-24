@@ -31,8 +31,7 @@ const Profile = () => {
       authUserId,
     });
   const [saveUserProfile, saveUserResult] = useSaveProfile();
-  const [openImageUploader, saveUserImageResult, saveUserTreeResult] =
-    useImageUpload();
+  const [openImageUploader, saveUserImageResult] = useImageUpload();
 
   useCheckLoginStatus();
 

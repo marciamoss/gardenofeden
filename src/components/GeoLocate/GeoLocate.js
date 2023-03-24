@@ -1,7 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
-import "./GeoLocate.css";
 import { MdClose } from "react-icons/md";
 import { userDataInfo, useSaveUserTreesMutation } from "../../store";
 
@@ -9,18 +8,26 @@ import useTreeLocate from "../../hooks/use-tree-locate";
 
 const GeoLocate = ({ showGeoLocate }) => {
   const dispatch = useDispatch();
-  const { userId, tree_image_link } = useSelector(
-    (state) => state.userData.tree
-  );
+  const { userId, tree_image_link, latitude_exif, longitude_exif } =
+    useSelector((state) => state.userData.tree);
   const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
   const [location, setLocation] = useState("");
+  const [date_planted, setDate_Planted] = useState("");
+  const [users_tree_name, setUsers_Tree_Name] = useState("");
   const [geocode, clear, latitude, longitude] = useTreeLocate();
 
   const handleLocation = () => geocode({ address: location });
 
   useEffect(() => {
     if (saveUserTreeResult.isSuccess) {
-      dispatch(userDataInfo({ showGeoLocate: false }));
+      dispatch(
+        userDataInfo({
+          showGeoLocate: false,
+          image: "",
+          imageType: "",
+          tree: "",
+        })
+      );
     }
     if (saveUserTreeResult.error) {
       dispatch(
@@ -35,13 +42,17 @@ const GeoLocate = ({ showGeoLocate }) => {
       edenUserTrees: {
         userId,
         tree_image_link,
-        latitude,
-        longitude,
+        latitude: latitude ? latitude : latitude_exif ? latitude_exif : "",
+        longitude: longitude ? longitude : longitude_exif ? longitude_exif : "",
+        users_tree_name,
+        date_planted,
       },
     });
   };
   const handleClear = () => {
     setLocation("");
+    setDate_Planted("");
+    setUsers_Tree_Name("");
     clear();
   };
 
@@ -77,7 +88,14 @@ const GeoLocate = ({ showGeoLocate }) => {
                     type="button"
                     className="absolute right-0 top-0 p-2 outline-none"
                     onClick={() => {
-                      dispatch(userDataInfo({ showGeoLocate: false }));
+                      dispatch(
+                        userDataInfo({
+                          showGeoLocate: false,
+                          image: "",
+                          imageType: "",
+                          tree: "",
+                        })
+                      );
                     }}
                   >
                     <MdClose size={30} />
@@ -87,16 +105,48 @@ const GeoLocate = ({ showGeoLocate }) => {
                     className="font-bold text-sm font-serif leading-6 text-center"
                   >
                     Click on the Map/Type in the adrress below and click "Save
-                    Pin" when your tree is in desire location
+                    Pin" when your tree is in desire location.
+                    {latitude_exif && longitude_exif ? (
+                      <p className="text-yellow-400">
+                        location was extracted from the image, move the pin or
+                        save as is, if you so choose
+                      </p>
+                    ) : (
+                      ""
+                    )}
                   </Dialog.Title>
                   <form onSubmit={(event) => event.preventDefault()}>
                     <input
                       type="text"
-                      className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
+                      className="h-8 w-full text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
                       placeholder="Location"
                       value={location}
                       onChange={(event) => {
                         setLocation(event.target.value);
+                      }}
+                    />
+                    <div className="mt-1 text-yellow-400">
+                      --Date & Name are Optional fields--
+                    </div>
+                    <input
+                      type="date"
+                      className={`${
+                        date_planted ? "text-black" : "text-gray-400"
+                      } mt-1 h-8 w-1/3 pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none`}
+                      placeholder="Date Planted"
+                      value={date_planted}
+                      onChange={(event) => {
+                        setDate_Planted(event.target.value);
+                      }}
+                    />
+                    <input
+                      type="text"
+                      className="mt-1 ml-2 h-8 w-1/2 right-0 text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
+                      placeholder="Tree Name(15 Char max)"
+                      value={users_tree_name}
+                      maxLength="15"
+                      onChange={(event) => {
+                        setUsers_Tree_Name(event.target.value);
                       }}
                     />
                     <div className="mt-1 mb-1">
@@ -112,10 +162,14 @@ const GeoLocate = ({ showGeoLocate }) => {
                         Find Location
                       </button>
                       <button
-                        disabled={!(latitude && longitude)}
+                        disabled={
+                          !(latitude && longitude) &&
+                          !(latitude_exif && longitude_exif)
+                        }
                         onClick={savePin}
                         className={`${
-                          !(latitude && longitude)
+                          !(latitude && longitude) &&
+                          !(latitude_exif && longitude_exif)
                             ? "bg-slate-500 text-slate-400"
                             : "bg-violet-50 text-violet-700 hover:bg-violet-100"
                         } ml-2 w-24 text-sm p-1 rounded-full text-sm font-semibold `}

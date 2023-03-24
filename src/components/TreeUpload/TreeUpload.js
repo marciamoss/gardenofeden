@@ -1,53 +1,34 @@
 import React from "react";
-import "./TreeUpload.css";
-import { Card } from "@material-tailwind/react";
-import { useFetchUserTreesQuery, useDeleteUserTreeMutation } from "../../store";
+import TreeItem from "./TreeItem";
+import { useFetchUserTreesQuery } from "../../store";
 
 const TreeUpload = ({ authUserId, openImageUploader }) => {
   const { data } = useFetchUserTreesQuery(authUserId);
-  const [deleteUserTree] = useDeleteUserTreeMutation();
+
   return (
-    <div className="static">
+    <div className="static p-5">
       <div className="relative">
         <button
-          className="bg-stone-300 text-black font-bold rounded-2xl p-1 w-fit h-24 p-2 max-[640px]:h-fit"
+          className="bg-stone-300 text-black font-bold rounded-2xl w-fit h-24 p-2 max-[640px]:text-sm max-[640px]:h-fit min-[1493px]:mb-5"
           onClick={() => openImageUploader({ authUserId, imageType: "trees" })}
         >
           Click to upload the images in this box, of the trees you planted and
           click save button besides the image
+          <p className="text-sm text-green-700 font-bold">
+            {data && data?.length > 0
+              ? `Your Number of trees ${data.length}`
+              : ""}
+          </p>
         </button>
         &nbsp;
       </div>
-      {data && data.length > 0
-        ? data.map((image, index) => (
-            <div key={index} className="image-item">
-              <Card className="border-2 border-white">
-                <img
-                  src={image.tree_image_link}
-                  alt=""
-                  className="tree-image"
-                />
-              </Card>
-
-              <div className="image-item__btn-wrapper">
-                <button
-                  className="bg-lime-900 m-1 text-xs w-14"
-                  onClick={() => {}}
-                >
-                  Update
-                </button>
-                <button
-                  className="bg-yellow-900 m-1 text-xs w-14"
-                  onClick={() => {
-                    deleteUserTree({ tree: image });
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        : ""}
+      <div className="pl-5 pr-5 mb-5 max-[653px]:mb-10">
+        {data && data.length > 0
+          ? data
+              .map((image, index) => <TreeItem key={image._id} image={image} />)
+              .reverse()
+          : ""}
+      </div>
     </div>
   );
 };
