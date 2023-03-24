@@ -2,12 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   image: "",
   imageType: "",
-  noGeoData: false,
+  tree: "",
+  showGeoLocate: false,
+  showGeoLocateError: false,
   imageUploadError: false,
   imageUploadErrorMessage: "",
   profileUpdateError: "",
   profileUpdateErrorMessage: "",
   showProfileUpdateForm: false,
+  userLocation: { lat: 0, lng: 0 },
 };
 const userDataSlice = createSlice({
   name: "userData",

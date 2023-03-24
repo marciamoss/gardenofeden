@@ -12,13 +12,7 @@ const logo = require(`../../images/tree-earth.png`);
 
 const Header = () => {
   const dispatch = useDispatch();
-
-  const { signedIn, showMenu } = useSelector((state) => {
-    return {
-      signedIn: state.authData.signedIn,
-      showMenu: state.authData.showMenu,
-    };
-  });
+  const { signedIn, showMenu } = useSelector((state) => state.authData);
   useEmailLinkCompleteQuery({ signedIn });
 
   return (
@@ -42,7 +36,7 @@ const Header = () => {
         <div className="text-right">
           <Menu
             as="div"
-            className="relative inline-block text-left float-right z-30"
+            className="relative inline-block text-left float-right z-10"
           >
             <div>
               <Menu.Button

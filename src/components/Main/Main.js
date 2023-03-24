@@ -6,11 +6,7 @@ import Profile from "../Profile/Profile";
 
 const Main = () => {
   useDrawMap();
-  const { showProfile } = useSelector((state) => {
-    return {
-      showProfile: state.authData.showProfile,
-    };
-  });
+  const { showProfile } = useSelector((state) => state.authData);
 
   return (
     <>

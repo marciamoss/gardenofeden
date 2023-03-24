@@ -1,9 +1,12 @@
 import { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
+import { useDispatch } from "react-redux";
+import { userDataInfo } from "../store";
 const keys = require("../keys.js");
 const trees = require("../mockTrees.json");
 
 const useDrawMap = () => {
+  const dispatch = useDispatch();
   useEffect(() => {
     const loader = new Loader({
       apiKey: keys.maps.apiKey,
@@ -49,6 +52,11 @@ const useDrawMap = () => {
                 lng: position.coords.longitude,
               };
 
+              dispatch(
+                userDataInfo({
+                  userLocation: pos,
+                })
+              );
               infoWindow.setPosition(pos);
               infoWindow.setContent("You are here.");
               infoWindow.open(map);

@@ -14,11 +14,8 @@ const SigninModal = () => {
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.userEmail
   );
   const [logIn] = useLogInMutation();
-  const { showSignin } = useSelector((state) => {
-    return {
-      showSignin: state.authData.showSignin,
-    };
-  });
+  const { showSignin } = useSelector((state) => state.authData);
+
   return (
     <>
       <Transition appear show={showSignin} as={Fragment}>

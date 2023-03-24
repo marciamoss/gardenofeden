@@ -15,12 +15,8 @@ const useImageUpload = () => {
   const [saveUserProfile, saveUserImageResult] = useSaveUserProfileMutation();
   const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
   const [openImageUploader] = useOpenImageUploaderMutation();
+  const { image } = useSelector((state) => state.userData);
 
-  const { image } = useSelector((state) => {
-    return {
-      image: state.userData.image,
-    };
-  });
   useEffect(() => {
     if (image && image.imageType === "trees") {
       getImageGeoLocation({
@@ -36,7 +32,7 @@ const useImageUpload = () => {
         },
       });
     }
-  }, [image, getImageGeoLocation]);
+  }, [image, getImageGeoLocation, saveUserProfile]);
 
   useEffect(() => {
     if (geoLocationResult.error) {
@@ -59,12 +55,16 @@ const useImageUpload = () => {
       } else {
         dispatch(
           userDataInfo({
-            noGeoData: true,
+            showGeoLocate: true,
+            tree: {
+              userId: geoLocationResult.data.authUserId,
+              tree_image_link: geoLocationResult.data.image_link,
+            },
           })
         );
       }
     }
-  }, [geoLocationResult, dispatch, saveUserProfile]);
+  }, [geoLocationResult, dispatch, saveUserTrees]);
 
   useEffect(() => {
     if (saveUserImageResult.error) {

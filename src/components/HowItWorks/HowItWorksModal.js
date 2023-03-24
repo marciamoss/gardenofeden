@@ -5,11 +5,8 @@ import { authDataInfo } from "../../store";
 
 const HowItWorksModal = () => {
   const dispatch = useDispatch();
-  const { showWorks } = useSelector((state) => {
-    return {
-      showWorks: state.authData.showWorks,
-    };
-  });
+  const { showWorks } = useSelector((state) => state.authData);
+
   return (
     <>
       <Transition appear show={showWorks} as={Fragment}>

@@ -8,12 +8,7 @@ import { CgProfile } from "react-icons/cg";
 const MenuDropDown = () => {
   const dispatch = useDispatch();
   const [logOut] = useLogOutMutation();
-  const { authUserId } = useSelector((state) => {
-    return {
-      authUserId: state.authData.authUserId,
-    };
-  });
-
+  const { authUserId } = useSelector((state) => state.authData);
   const [signedIn] = useState(
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
       ? true

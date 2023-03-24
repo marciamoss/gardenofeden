@@ -7,6 +7,7 @@ import MessageModal from "../Message/MessageModal";
 import SigninModal from "../Signin/SigninModal";
 import AboutModal from "../About/AboutModal";
 import HowItWorksModal from "../HowItWorks/HowItWorksModal";
+import GeoLocate from "../GeoLocate/GeoLocate";
 
 const ActionPopups = () => {
   const dispatch = useDispatch();
@@ -21,31 +22,14 @@ const ActionPopups = () => {
     showSignin,
     showAbout,
     showWorks,
+  } = useSelector((state) => state.authData);
+  const {
     imageUploadError,
-    imageUploadErrorMessage,
     profileUpdateError,
     profileUpdateErrorMessage,
-    noGeoData,
-  } = useSelector((state) => {
-    return {
-      showError: state.authData.showError,
-      errorMessage: state.authData.errorMessage,
-      emailConfirm: state.authData.emailConfirm,
-      emailSent: state.authData.emailSent,
-      showWelcomeMessage: state.authData.showWelcomeMessage,
-      authUserId: state.authData.authUserId,
-      loggedOutMessage: state.authData.loggedOutMessage,
-      showSignin: state.authData.showSignin,
-      showAbout: state.authData.showAbout,
-      showWorks: state.authData.showWorks,
-      imageUploadError: state.userData.imageUploadError,
-      imageUploadErrorMessage: state.userData.imageUploadErrorMessage,
-      profileUpdateError: state.userData.profileUpdateError,
-      profileUpdateErrorMessage: state.userData.profileUpdateErrorMessage,
-      noGeoData: state.userData.noGeoData,
-    };
-  });
-
+    showGeoLocate,
+    showGeoLocateError,
+  } = useSelector((state) => state.userData);
   return (
     <>
       <>
@@ -153,14 +137,15 @@ const ActionPopups = () => {
           ""
         )}
       </>
+      <>{showGeoLocate ? <GeoLocate showGeoLocate={showGeoLocate} /> : ""}</>
       <>
-        {noGeoData ? (
+        {showGeoLocateError ? (
           <MessageModal
-            showModal={noGeoData}
+            showModal={showGeoLocateError}
             dispatchType={() => {
-              dispatch(userDataInfo({ noGeoData: false }));
+              dispatch(userDataInfo({ showGeoLocateError: false }));
             }}
-            message={`No Location data available in the image, working on adding the location by address. For now only accepting images with geolocation exif data`}
+            message={`Location Not found, Please check the address or directly click on the map to locate`}
             modalColor={"bg-orange-900"}
           />
         ) : (

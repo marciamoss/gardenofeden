@@ -4,7 +4,7 @@ import { Card } from "@material-tailwind/react";
 import { useFetchUserTreesQuery, useDeleteUserTreeMutation } from "../../store";
 
 const TreeUpload = ({ authUserId, openImageUploader }) => {
-  const { data, isFetching, isLoading } = useFetchUserTreesQuery(authUserId);
+  const { data } = useFetchUserTreesQuery(authUserId);
   const [deleteUserTree] = useDeleteUserTreeMutation();
   return (
     <div className="static">
