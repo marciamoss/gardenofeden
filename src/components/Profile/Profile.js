@@ -1,12 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./Profile.css";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-} from "@material-tailwind/react";
+import { Card, CardHeader, CardBody } from "@material-tailwind/react";
 import { CgProfile } from "react-icons/cg";
 import { RiGalleryUploadFill, RiDeleteBin2Fill } from "react-icons/ri";
 import TreeUpload from "../TreeUpload/TreeUpload";
@@ -77,7 +72,7 @@ const Profile = () => {
                 }}
               >
                 <button
-                  className="bg-green-50 w-fit text-sm p-1 text-slate-500 rounded-full text-sm font-semibold text-green-900 hover:bg-green-100"
+                  className="bg-green-50 w-fit text-sm p-1 rounded-full text-sm font-semibold text-green-900 hover:bg-green-100"
                   disabled={
                     saveUserImageResult.status === "pending" || isFetching
                   }
@@ -98,7 +93,7 @@ const Profile = () => {
                 }}
               >
                 <button
-                  className={`bg-red-50 w-fit ml-2 text-sm p-1 text-slate-500 rounded-full
+                  className={`bg-red-50 w-fit ml-2 text-sm p-1 rounded-full
               text-sm font-semibold text-red-700 hover:bg-red-100`}
                   disabled={saveUserResult.status === "pending" || isFetching}
                   onClick={() =>
@@ -127,7 +122,7 @@ const Profile = () => {
                   })
                 )
               }
-              className={`bg-blue-50 text-sm p-1 text-slate-500 rounded-full
+              className={`bg-blue-50 text-sm p-1 rounded-full
               text-sm font-semibold text-blue-700 hover:bg-blue-100`}
             >
               Update Profile
