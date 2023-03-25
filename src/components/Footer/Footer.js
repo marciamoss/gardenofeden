@@ -2,8 +2,8 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col justify-center bg-black absolute bottom-0 right-0 left-0">
-      <p className="mx-auto text-lg text-center text-white px-4 py-3 ">
+    <footer className="pb-1 bg-black absolute inset-x-0 bottom-0 h-8 overflow-scroll">
+      <p className="mx-auto text-lg text-center text-white max-[280px]:text-xs">
         The users of this site have planted %% trees, offsetting over %% tons of
         carbon!
       </p>

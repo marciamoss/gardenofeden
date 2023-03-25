@@ -79,7 +79,7 @@ const SigninModal = () => {
                   )}
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-serif font-medium leading-6 text-center"
+                    className="max-[640px]:text-sm max-[280px]:text-xs text-lg font-serif font-medium leading-6 text-center"
                   >
                     {signedUp
                       ? `You are signed in as ${userEmail}, logout from this account if you want to login into a different account`
@@ -103,7 +103,7 @@ const SigninModal = () => {
                       <div className="mt-2 font-serif">
                         <input
                           type="text"
-                          className="h-14 w-full text-black pl-14 pr-20 rounded-lg z-0 focus:shadow focus:outline-none"
+                          className="h-14 max-[280px]:text-xs max-[280px]:h-10 w-full text-black pl-2 pr-2 rounded-lg z-0 focus:shadow focus:outline-none"
                           placeholder="Email"
                           value={email}
                           onChange={(event) => {
@@ -118,7 +118,7 @@ const SigninModal = () => {
                           disabled={!email}
                           className={`${
                             !email ? "bg-slate-400" : ""
-                          } inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
+                          } max-[280px]:text-xs inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black max-[280px]:px-2 max-[280px]:py-1 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
                           onClick={() => {
                             dispatch(
                               authDataInfo({
@@ -133,7 +133,7 @@ const SigninModal = () => {
                         </button>
                         <button
                           type="button"
-                          className="inline-flex float-right justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                          className="max-[280px]:text-xs inline-flex float-right justify-center rounded-md border bg-green-300 border-2 border-black max-[280px]:px-2 max-[280px]:py-1 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                           onClick={() => {
                             dispatch(
                               authDataInfo({

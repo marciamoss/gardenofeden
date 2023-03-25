@@ -9,11 +9,10 @@ const TreeUpload = ({ authUserId, openImageUploader }) => {
     <div className="static p-5">
       <div className="relative">
         <button
-          className="bg-stone-300 text-black font-bold rounded-2xl w-fit h-24 p-2 max-[640px]:text-sm max-[640px]:h-fit min-[1493px]:mb-5"
+          className="bg-purple-50 text-black font-bold rounded-2xl w-fit h-24 p-2 max-[640px]:text-sm max-[640px]:h-fit min-[608px]:mb-5"
           onClick={() => openImageUploader({ authUserId, imageType: "trees" })}
         >
-          Click to upload the images in this box, of the trees you planted and
-          click save button besides the image
+          Click in this box to upload the images of your trees
           <p className="text-sm text-green-700 font-bold">
             {data && data?.length > 0
               ? `Your Number of trees ${data.length}`

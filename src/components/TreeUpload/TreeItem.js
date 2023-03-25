@@ -9,7 +9,7 @@ const TreeItem = ({ image }) => {
 
   return (
     <div className="mb-5">
-      <div className="bg-stone-300 border-2 max-[640px]:text-xs min-[1493px]:text-lg">
+      <div className="bg-purple-50 rounded-t-2xl border-2 max-[640px]:text-xs min-[1493px]:text-lg">
         <div className="break-words text-center text-black font-bold">
           {image.users_tree_name ? image.users_tree_name : "Name: N/A"}
         </div>
@@ -26,15 +26,15 @@ const TreeItem = ({ image }) => {
           />
         </CardHeader>
       </Card>
-      <div className="bg-stone-300 border-2">
+      <div className="bg-purple-50 rounded-b-2xl border-2">
         <button
-          className="bg-lime-900 m-1 text-xs w-14 min-[1493px]:text-lg min-[1493px]:w-24"
+          className="bg-lime-900 m-1 text-xs text-white w-14 min-[1493px]:text-lg min-[1493px]:w-24"
           onClick={() => {}}
         >
           Update
         </button>
         <button
-          className="bg-yellow-900 m-1 text-xs w-14 min-[1493px]:text-lg min-[1493px]:w-24"
+          className="bg-yellow-900 m-1 text-xs text-white w-14 min-[1493px]:text-lg min-[1493px]:w-24"
           onClick={() => {
             deleteUserTree({ tree: image });
           }}

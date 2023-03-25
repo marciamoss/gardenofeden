@@ -11,12 +11,7 @@ const Main = () => {
   return (
     <>
       {showProfile ? <Profile /> : ""}
-      <div
-        id="map"
-        className={`${
-          showProfile ? "hidden" : ""
-        } w-screen h-screen mx-auto mt-7`}
-      ></div>
+      <div id="map" className={`${showProfile ? "hidden" : ""} mx-auto`}></div>
     </>
   );
 };

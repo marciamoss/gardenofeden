@@ -42,7 +42,7 @@ const MessageModal = ({ showModal, dispatchType, message, modalColor }) => {
                   </button>
                   <Dialog.Title
                     as="h3"
-                    className="mt-7 text-lg font-serif font-bold leading-6 text-center"
+                    className="max-[640px]:text-sm max-[280px]:text-xs break-words overflow-scroll mt-7 text-lg font-serif font-bold leading-6 text-center"
                   >
                     {message}
                   </Dialog.Title>

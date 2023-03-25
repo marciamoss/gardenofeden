@@ -45,15 +45,15 @@ const HowItWorksModal = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-green-100 p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-purple-50 max-[280px]:p-4 p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-serif font-medium leading-6 text-center"
+                    className="max-[640px]:text-sm max-[280px]:text-xs text-lg font-serif font-medium leading-6 text-center"
                   >
                     How It Works
                   </Dialog.Title>
                   <div className="mt-2 font-serif">
-                    <ul className="text-lg list-disc">
+                    <ul className="max-[640px]:text-sm max-[280px]:text-xs text-lg list-disc">
                       <li>
                         To join the effort at goTreeUrself, first register with
                         your information.
@@ -93,7 +93,7 @@ const HowItWorksModal = () => {
                   <div className="mt-4 flex flex-col items-center">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      className="inline-flex justify-center rounded-md border bg-green-300 border-2 border-black px-4 py-2 max-[280px]:text-xs text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                       onClick={() => {
                         dispatch(
                           authDataInfo({
