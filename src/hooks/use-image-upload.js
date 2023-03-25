@@ -60,6 +60,14 @@ const useImageUpload = () => {
   }, [geoLocationResult, dispatch]);
 
   useEffect(() => {
+    if (saveUserImageResult.isSuccess) {
+      dispatch(
+        userDataInfo({
+          image: "",
+          imageType: "",
+        })
+      );
+    }
     if (saveUserImageResult.error) {
       dispatch(
         userDataInfo({
