@@ -77,7 +77,7 @@ const useDrawMap = () => {
       .catch((e) => {
         console.log("error", e);
       });
-  }, []);
+  }, [dispatch]);
 };
 
 export default useDrawMap;

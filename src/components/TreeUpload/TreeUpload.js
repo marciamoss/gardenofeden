@@ -1,9 +1,10 @@
 import React from "react";
 import TreeItem from "./TreeItem";
 import { useFetchUserTreesQuery } from "../../store";
+import Skeleton from "../Skeleton";
 
 const TreeUpload = ({ authUserId, openImageUploader }) => {
-  const { data } = useFetchUserTreesQuery(authUserId);
+  const { data, isFetching, isLoading } = useFetchUserTreesQuery(authUserId);
   return (
     <div className="static p-5">
       <div className="relative">
@@ -21,11 +22,21 @@ const TreeUpload = ({ authUserId, openImageUploader }) => {
         &nbsp;
       </div>
       <div className="pl-5 pr-5 mb-5 max-[653px]:mb-10">
-        {data && data.length > 0
-          ? data
-              .map((image, index) => <TreeItem key={image._id} image={image} />)
-              .reverse()
-          : ""}
+        <>
+          {isFetching || isLoading ? (
+            <Skeleton times={10} className="h-10 w-full" />
+          ) : (
+            ""
+          )}
+
+          {!isFetching && !isLoading && data && data.length > 0
+            ? data
+                .map((image, index) => (
+                  <TreeItem key={image._id} image={image} />
+                ))
+                .reverse()
+            : ""}
+        </>
       </div>
     </div>
   );
