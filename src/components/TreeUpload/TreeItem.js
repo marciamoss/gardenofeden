@@ -1,12 +1,12 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Card, CardHeader } from "@material-tailwind/react";
-import { useDeleteUserTreeMutation } from "../../store";
+import { userDataInfo } from "../../store";
 import { useFormatDate } from "../../hooks";
 
 const TreeItem = ({ image }) => {
-  const [deleteUserTree] = useDeleteUserTreeMutation();
+  const dispatch = useDispatch();
   const [rDate] = useFormatDate(image.date_planted);
-
   return (
     <div className="mb-5">
       <div className="bg-purple-50 rounded-t-2xl border-2 max-[640px]:text-xs min-[1493px]:text-lg">
@@ -29,14 +29,29 @@ const TreeItem = ({ image }) => {
       <div className="bg-purple-50 rounded-b-2xl border-2">
         <button
           className="bg-lime-900 m-1 text-xs text-white w-14 min-[1493px]:text-lg min-[1493px]:w-24"
-          onClick={() => {}}
+          onClick={() => {
+            dispatch(
+              userDataInfo({
+                tree: {
+                  ...image,
+                  date_planted: image.date_planted?.substring(0, 10),
+                },
+                showTreeUpdateForm: true,
+              })
+            );
+          }}
         >
           Update
         </button>
         <button
           className="bg-yellow-900 m-1 text-xs text-white w-14 min-[1493px]:text-lg min-[1493px]:w-24"
           onClick={() => {
-            deleteUserTree({ tree: image });
+            dispatch(
+              userDataInfo({
+                tree: image,
+                showTreeDeleteConfirm: true,
+              })
+            );
           }}
         >
           Delete

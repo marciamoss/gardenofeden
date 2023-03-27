@@ -2,16 +2,20 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { authDataInfo, userDataInfo } from "../../store";
+import { useImageDelete, useSaveProfile } from "../../hooks";
 import SigninEmailConfirmModal from "../Signin/SigninEmailConfirmModal";
 import MessageModal from "../Message/MessageModal";
 import SigninModal from "../Signin/SigninModal";
 import AboutModal from "../About/AboutModal";
 import HowItWorksModal from "../HowItWorks/HowItWorksModal";
 import GeoLocate from "../GeoLocate/GeoLocate";
+import TreeUpdateForm from "../TreeUpload/TreeUpdateForm";
 
 const ActionPopups = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [deleteUserTree] = useImageDelete();
+  const [saveUserProfile] = useSaveProfile();
   const {
     showError,
     errorMessage,
@@ -22,13 +26,17 @@ const ActionPopups = () => {
     showSignin,
     showAbout,
     showWorks,
+    authUserId,
   } = useSelector((state) => state.authData);
   const {
     imageUploadError,
     profileUpdateError,
-    profileUpdateErrorMessage,
     showGeoLocate,
     showGeoLocateError,
+    showTreeUpdateForm,
+    showTreeDeleteConfirm,
+    tree,
+    showPicDeleteConfirm,
   } = useSelector((state) => state.userData);
   return (
     <>
@@ -116,7 +124,7 @@ const ActionPopups = () => {
             dispatchType={() => {
               dispatch(userDataInfo({ imageUploadError: false }));
             }}
-            message={`Image upload failed at this time`}
+            message={`Image action failed at this time`}
             modalColor={"bg-orange-900"}
           />
         ) : (
@@ -130,7 +138,7 @@ const ActionPopups = () => {
             dispatchType={() => {
               dispatch(userDataInfo({ profileUpdateError: false }));
             }}
-            message={`Profile update failed, Reason: ${profileUpdateErrorMessage}`}
+            message={`Profile update failed`}
             modalColor={"bg-orange-900"}
           />
         ) : (
@@ -147,6 +155,56 @@ const ActionPopups = () => {
             }}
             message={`Location Not found, Please check the address or directly click on the map to locate`}
             modalColor={"bg-orange-900"}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>{showTreeUpdateForm ? <TreeUpdateForm /> : ""}</>
+      <>
+        {showTreeDeleteConfirm ? (
+          <MessageModal
+            showModal={showTreeDeleteConfirm}
+            dispatchType={() => {
+              dispatch(
+                userDataInfo({
+                  showTreeDeleteConfirm: false,
+                  image: "",
+                  imageType: "",
+                })
+              );
+            }}
+            message={`Are you sure you want to delete this image`}
+            modalColor={"bg-gray-600"}
+            actionOnConfirm={() => deleteUserTree({ tree })}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {showPicDeleteConfirm ? (
+          <MessageModal
+            showModal={showPicDeleteConfirm}
+            dispatchType={() => {
+              dispatch(
+                userDataInfo({
+                  showPicDeleteConfirm: false,
+                  image: "",
+                  imageType: "",
+                })
+              );
+            }}
+            message={`Are you sure you want to delete this image`}
+            modalColor={"bg-gray-600"}
+            actionOnConfirm={() =>
+              saveUserProfile({
+                edenUser: {
+                  userId: authUserId,
+                  profile_image_link: "",
+                },
+              })
+            }
           />
         ) : (
           ""

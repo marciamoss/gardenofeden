@@ -4,7 +4,6 @@ import { useFetchUserTreesQuery } from "../../store";
 
 const TreeUpload = ({ authUserId, openImageUploader }) => {
   const { data } = useFetchUserTreesQuery(authUserId);
-
   return (
     <div className="static p-5">
       <div className="relative">

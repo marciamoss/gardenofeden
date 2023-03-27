@@ -12,6 +12,7 @@ const useSaveProfile = () => {
         userDataInfo({
           profileUpdateError: true,
           profileUpdateErrorMessage: saveUserResult.error.message,
+          showPicDeleteConfirm: false,
         })
       );
     }
@@ -19,6 +20,7 @@ const useSaveProfile = () => {
       dispatch(
         userDataInfo({
           showProfileUpdateForm: false,
+          showPicDeleteConfirm: false,
         })
       );
     }

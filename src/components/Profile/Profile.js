@@ -10,10 +10,8 @@ import { userDataInfo } from "../../store";
 import {
   useCheckLoginStatus,
   useImageUpload,
-  useSaveProfile,
   useGetProfile,
 } from "../../hooks";
-import { Tooltip } from "@material-tailwind/react";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -27,7 +25,6 @@ const Profile = () => {
     useGetProfile({
       authUserId,
     });
-  const [saveUserProfile, saveUserResult] = useSaveProfile();
   const [openImageUploader, saveUserImageResult] = useImageUpload();
 
   useCheckLoginStatus();
@@ -64,50 +61,49 @@ const Profile = () => {
           </div>
           <div className="bg-purple-50 h-1/4 flex flex-row place-content-center">
             <div className="self-center">
-              <Tooltip
-                content="Upload"
-                animate={{
-                  mount: { scale: 1, y: 0 },
-                  unmount: { scale: 0, y: 25 },
-                }}
+              <button
+                className="bg-green-50 w-fit text-sm p-1 rounded-full text-sm font-semibold text-green-900 hover:bg-green-100"
+                disabled={
+                  saveUserImageResult.status === "pending" || isFetching
+                }
+                onClick={() =>
+                  openImageUploader({ authUserId, imageType: "user" })
+                }
               >
-                <button
-                  className="bg-green-50 w-fit text-sm p-1 rounded-full text-sm font-semibold text-green-900 hover:bg-green-100"
-                  disabled={
-                    saveUserImageResult.status === "pending" || isFetching
-                  }
-                  onClick={() =>
-                    openImageUploader({ authUserId, imageType: "user" })
-                  }
-                >
+                <div className="relative group">
                   <RiGalleryUploadFill size={30} />
-                </button>
-              </Tooltip>
+                  <div className="rounded-2xl bg-black w-16 opacity-0 group-hover:opacity-100 duration-300 absolute flex justify-center items-end text-sm text-white font-semibold">
+                    Update
+                  </div>
+                </div>
+              </button>
             </div>
             <div className="self-center">
-              <Tooltip
-                content="Delete"
-                animate={{
-                  mount: { scale: 1, y: 0 },
-                  unmount: { scale: 0, y: 25 },
-                }}
-              >
-                <button
-                  className={`bg-red-50 w-fit ml-2 text-sm p-1 rounded-full
-              text-sm font-semibold text-red-700 hover:bg-red-100`}
-                  disabled={saveUserResult.status === "pending" || isFetching}
-                  onClick={() =>
-                    saveUserProfile({
-                      edenUser: {
-                        userId: authUserId,
-                        profile_image_link: "",
-                      },
+              <button
+                className={`${
+                  !profile_image_link ? "text-slate-400" : "text-red-700"
+                } bg-red-50 w-fit ml-2 text-sm p-1 rounded-full
+              text-sm font-semibold hover:bg-red-100`}
+                disabled={!profile_image_link}
+                onClick={() =>
+                  dispatch(
+                    userDataInfo({
+                      showPicDeleteConfirm: true,
                     })
-                  }
-                >
+                  )
+                }
+              >
+                <div className="relative group">
                   <RiDeleteBin2Fill size={30} />
-                </button>
-              </Tooltip>
+                  {profile_image_link ? (
+                    <div className="rounded-2xl bg-black w-16 opacity-0 group-hover:opacity-100 duration-300 absolute flex justify-center items-end text-sm text-white font-semibold">
+                      Delete
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
+              </button>
             </div>
           </div>
         </CardHeader>

@@ -5,7 +5,11 @@ function useFormatDate(actualDate) {
 
   useEffect(() => {
     if (actualDate) {
-      const dt = new Date(actualDate);
+      const dt = new Date(`
+        ${actualDate.substring(5, 7)}"/"${actualDate.substring(
+        8,
+        10
+      )}"/"${actualDate.substring(0, 4)}`);
       const dte =
         dt.getDate().toString().length === 1
           ? `0${dt.getDate()}`

@@ -8,14 +8,23 @@ import useTreeLocate from "../../hooks/use-tree-locate";
 
 const GeoLocate = ({ showGeoLocate }) => {
   const dispatch = useDispatch();
-  const { userId, tree_image_link, latitude_exif, longitude_exif } =
-    useSelector((state) => state.userData.tree);
-  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
-  const [location, setLocation] = useState("");
-  const [date_planted, setDate_Planted] = useState("");
-  const [users_tree_name, setUsers_Tree_Name] = useState("");
-  const [geocode, clear, latitude, longitude] = useTreeLocate();
+  const {
+    userId,
+    tree_image_link,
+    latitude_exif,
+    longitude_exif,
+    _id,
+    date_planted,
+    users_tree_name,
+    geoAddress,
+  } = useSelector((state) => state.userData.tree);
 
+  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
+  const [location, setLocation] = useState(geoAddress || "");
+  const [datePlanted, setDatePlanted] = useState(date_planted || "");
+  const [usersTreeName, setUsersTreeName] = useState(users_tree_name || "");
+  const [geocode, clear, latitude, longitude, approximateGeoAddress] =
+    useTreeLocate();
   const handleLocation = () => geocode({ address: location });
 
   useEffect(() => {
@@ -23,6 +32,7 @@ const GeoLocate = ({ showGeoLocate }) => {
       dispatch(
         userDataInfo({
           showGeoLocate: false,
+          showTreeUpdateForm: false,
           image: "",
           imageType: "",
           tree: "",
@@ -37,29 +47,52 @@ const GeoLocate = ({ showGeoLocate }) => {
       );
     }
   }, [saveUserTreeResult, dispatch]);
+
+  useEffect(() => {
+    if (approximateGeoAddress) {
+      setLocation(approximateGeoAddress);
+    }
+  }, [approximateGeoAddress]);
+
   const savePin = () => {
     saveUserTrees({
       edenUserTrees: {
+        _id,
         userId,
         tree_image_link,
-        latitude: latitude ? latitude : latitude_exif ? latitude_exif : "",
-        longitude: longitude ? longitude : longitude_exif ? longitude_exif : "",
-        users_tree_name,
-        date_planted,
+        latitude: latitude,
+        longitude: longitude,
+        geoAddress: approximateGeoAddress,
+        users_tree_name: usersTreeName,
+        date_planted: datePlanted,
       },
     });
   };
   const handleClear = () => {
     setLocation("");
-    setDate_Planted("");
-    setUsers_Tree_Name("");
+    setDatePlanted("");
+    setUsersTreeName("");
     clear();
   };
 
   return (
     <>
       <Transition appear show={showGeoLocate} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => {}}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={() => {
+            dispatch(
+              userDataInfo({
+                showGeoLocate: false,
+                showTreeUpdateForm: false,
+                image: "",
+                imageType: "",
+                tree: "",
+              })
+            );
+          }}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -91,6 +124,7 @@ const GeoLocate = ({ showGeoLocate }) => {
                       dispatch(
                         userDataInfo({
                           showGeoLocate: false,
+                          showTreeUpdateForm: false,
                           image: "",
                           imageType: "",
                           tree: "",
@@ -131,23 +165,19 @@ const GeoLocate = ({ showGeoLocate }) => {
                     <input
                       type="date"
                       className={`${
-                        date_planted ? "text-black" : "text-gray-400"
+                        datePlanted ? "text-black" : "text-gray-400"
                       } mt-1 h-8 w-1/3 pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none`}
                       placeholder="Date Planted"
-                      value={date_planted}
-                      onChange={(event) => {
-                        setDate_Planted(event.target.value);
-                      }}
+                      value={datePlanted}
+                      onChange={(event) => setDatePlanted(event.target.value)}
                     />
                     <input
                       type="text"
                       className="mt-1 ml-2 h-8 w-1/2 right-0 text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
                       placeholder="Tree Name(15 Char max)"
-                      value={users_tree_name}
+                      value={usersTreeName}
                       maxLength="15"
-                      onChange={(event) => {
-                        setUsers_Tree_Name(event.target.value);
-                      }}
+                      onChange={(event) => setUsersTreeName(event.target.value)}
                     />
                     <div className="mt-1 mb-1">
                       <button

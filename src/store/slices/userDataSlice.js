@@ -10,6 +10,9 @@ const initialState = {
   profileUpdateError: "",
   profileUpdateErrorMessage: "",
   showProfileUpdateForm: false,
+  showTreeUpdateForm: false,
+  showTreeDeleteConfirm: false,
+  showPicDeleteConfirm: false,
   userLocation: { lat: 0, lng: 0 },
 };
 const userDataSlice = createSlice({

@@ -5,9 +5,15 @@ import { userDataInfo } from "../store";
 const useTreeLocate = () => {
   const dispatch = useDispatch();
   const { userLocation, tree } = useSelector((state) => state.userData);
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
-  const [pinPlace, setPinPlace] = useState(false);
+  const [approximateGeoAddress, setApproximateGeoAddress] = useState(
+    tree.geoAddress || ""
+  );
+  const [latitude, setLatitude] = useState(
+    tree?.latitude || tree?.latitude_exif || null
+  );
+  const [longitude, setLongitude] = useState(
+    tree?.longitude || tree.longitude_exif || null
+  );
   const [clearClicked, setClearClicked] = useState(false);
   let mapRef = useRef(null);
   let geocoderRef = useRef(null);
@@ -16,7 +22,6 @@ const useTreeLocate = () => {
   const clear = useCallback(() => {
     if (markerRef.current) {
       setClearClicked(true);
-      setPinPlace(false);
       setLatitude(null);
       setLongitude(null);
       markerRef.current.setMap(null);
@@ -40,15 +45,30 @@ const useTreeLocate = () => {
         .geocode(request)
         .then((result) => {
           const { results } = result;
+          setApproximateGeoAddress(results[0].formatted_address);
           setLatitude(results[0].geometry.location.lat());
           setLongitude(results[0].geometry.location.lng());
-          setPinPlace(true);
         })
         .catch((e) => {
           dispatch(userDataInfo({ showGeoLocateError: true }));
         });
     },
     [dispatch, clear]
+  );
+
+  const reverseGeocode = useCallback(
+    (latlng) => {
+      new window.google.maps.Geocoder()
+        .geocode({ location: latlng })
+        .then((result) => {
+          const { results } = result;
+          setApproximateGeoAddress(results[0].formatted_address);
+        })
+        .catch((e) => {
+          setApproximateGeoAddress(`${latitude}, ${longitude}`);
+        });
+    },
+    [latitude, longitude]
   );
 
   useEffect(() => {
@@ -67,32 +87,30 @@ const useTreeLocate = () => {
   }, [userLocation, geocode]);
 
   useEffect(() => {
-    if (pinPlace || (tree.latitude_exif && tree.longitude_exif)) {
+    if (latitude && longitude) {
       if (clearClicked) {
         setMarker();
         setClearClicked(false);
       }
-      markerRef.current.setPosition({
-        lat: latitude ? latitude : tree.latitude_exif ? tree.latitude_exif : "",
-        lng: longitude
-          ? longitude
-          : tree.longitude_exif
-          ? tree.longitude_exif
-          : "",
-      });
+      markerRef.current.setPosition({ lat: latitude, lng: longitude });
+      mapRef.current.setCenter({ lat: latitude, lng: longitude });
 
-      mapRef.current.setCenter({
-        lat: latitude ? latitude : tree.latitude_exif ? tree.latitude_exif : "",
-        lng: longitude
-          ? longitude
-          : tree.longitude_exif
-          ? tree.longitude_exif
-          : "",
-      });
+      if (latitude && longitude && !approximateGeoAddress) {
+        reverseGeocode({
+          lat: latitude,
+          lng: longitude,
+        });
+      }
     }
-  }, [latitude, longitude, pinPlace, clearClicked, tree]);
+  }, [
+    latitude,
+    longitude,
+    clearClicked,
+    approximateGeoAddress,
+    reverseGeocode,
+  ]);
 
-  return [geocode, clear, latitude, longitude];
+  return [geocode, clear, latitude, longitude, approximateGeoAddress];
 };
 
 export default useTreeLocate;

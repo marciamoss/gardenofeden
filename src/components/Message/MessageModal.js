@@ -2,7 +2,13 @@ import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { MdClose } from "react-icons/md";
 
-const MessageModal = ({ showModal, dispatchType, message, modalColor }) => {
+const MessageModal = ({
+  showModal,
+  dispatchType,
+  message,
+  modalColor,
+  actionOnConfirm,
+}) => {
   return (
     <>
       <Transition appear show={showModal} as={Fragment}>
@@ -46,6 +52,24 @@ const MessageModal = ({ showModal, dispatchType, message, modalColor }) => {
                   >
                     {message}
                   </Dialog.Title>
+                  {message === "Are you sure you want to delete this image" ? (
+                    <div className="flex flex-row place-content-center mt-3">
+                      <button
+                        onClick={actionOnConfirm}
+                        className="max-[640px]:text-sm max-[280px]:text-xs break-words text-fuchsia-100 rounded-full bg-stone-700 hover:bg-stone-900 w-16 ml-3"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={dispatchType}
+                        className="max-[640px]:text-sm max-[280px]:text-xs break-words text-fuchsia-100 rounded-full bg-yellow-800 hover:bg-yellow-900 w-16 ml-3"
+                      >
+                        No
+                      </button>
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </Dialog.Panel>
               </Transition.Child>
             </div>
