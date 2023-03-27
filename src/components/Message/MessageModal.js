@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { MdClose } from "react-icons/md";
+import { GoThumbsup, GoThumbsdown } from "react-icons/go";
 
 const MessageModal = ({
   showModal,
@@ -59,15 +60,15 @@ const MessageModal = ({
                     <div className="flex flex-row place-content-center mt-3">
                       <button
                         onClick={actionOnConfirm}
-                        className="max-[640px]:text-sm max-[280px]:text-xs break-words text-fuchsia-100 rounded-full bg-stone-700 hover:bg-stone-900 w-16 ml-3"
+                        className="max-[640px]:text-sm max-[280px]:text-xs break-words rounded-full text-3xl text-green-700 font-bold bg-slate-100 hover:bg-green-300 w-fit p-2 ml-3 mr-3"
                       >
-                        Yes
+                        <GoThumbsup />
                       </button>
                       <button
                         onClick={dispatchType}
-                        className="max-[640px]:text-sm max-[280px]:text-xs break-words text-fuchsia-100 rounded-full bg-yellow-800 hover:bg-yellow-900 w-16 ml-3"
+                        className="max-[640px]:text-sm max-[280px]:text-xs break-words text-fuchsia-100 rounded-full text-3xl text-red-700 font-bold bg-slate-100 hover:bg-red-300 w-fit p-2 ml-3"
                       >
-                        No
+                        <GoThumbsdown />
                       </button>
                     </div>
                   ) : (

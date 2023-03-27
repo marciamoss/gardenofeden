@@ -177,7 +177,7 @@ const ActionPopups = () => {
               );
             }}
             message={`Are you sure you want to delete this image`}
-            modalColor={"bg-gray-600"}
+            modalColor={"bg-black"}
             actionOnConfirm={() => deleteUserTree({ tree })}
           />
         ) : (
@@ -198,7 +198,7 @@ const ActionPopups = () => {
               );
             }}
             message={`Are you sure you want to delete this image`}
-            modalColor={"bg-gray-600"}
+            modalColor={"bg-black"}
             actionOnConfirm={() =>
               saveUserProfile({
                 edenUser: {
@@ -224,7 +224,7 @@ const ActionPopups = () => {
               );
             }}
             message={`Are you sure you want to logout?`}
-            modalColor={"bg-gray-600"}
+            modalColor={"bg-black"}
             actionOnConfirm={() => logOut({ uid: authUserId })}
           />
         ) : (
