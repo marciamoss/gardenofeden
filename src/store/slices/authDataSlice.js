@@ -23,6 +23,7 @@ const initialState = {
   showSignin: false,
   showAbout: false,
   showWorks: false,
+  showLogoutConfirm: false,
 };
 const authDataSlice = createSlice({
   name: "authData",

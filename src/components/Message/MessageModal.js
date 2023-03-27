@@ -52,7 +52,10 @@ const MessageModal = ({
                   >
                     {message}
                   </Dialog.Title>
-                  {message === "Are you sure you want to delete this image" ? (
+                  {[
+                    "Are you sure you want to delete this image",
+                    "Are you sure you want to logout?",
+                  ].indexOf(message) >= 0 ? (
                     <div className="flex flex-row place-content-center mt-3">
                       <button
                         onClick={actionOnConfirm}

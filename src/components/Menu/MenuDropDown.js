@@ -1,14 +1,12 @@
 import { Fragment, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLogOutMutation, authDataInfo } from "../../store";
+import { useDispatch } from "react-redux";
+import { authDataInfo } from "../../store";
 import "./MenuDropDown.css";
 import { Menu, Transition } from "@headlessui/react";
 import { CgProfile } from "react-icons/cg";
 
 const MenuDropDown = () => {
   const dispatch = useDispatch();
-  const [logOut] = useLogOutMutation();
-  const { authUserId } = useSelector((state) => state.authData);
   const [signedIn] = useState(
     JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
       ? true
@@ -56,14 +54,14 @@ const MenuDropDown = () => {
                       className={`${
                         active ? "bg-sky-500 text-white" : "text-gray-900"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold max-[280px]:text-xs`}
-                      onClick={() => {
+                      onClick={() =>
                         dispatch(
                           authDataInfo({
                             showMenu: false,
+                            showLogoutConfirm: true,
                           })
-                        );
-                        logOut({ uid: authUserId });
-                      }}
+                        )
+                      }
                     >
                       Logout
                     </button>

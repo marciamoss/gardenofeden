@@ -156,6 +156,7 @@ const authApi = createApi({
                   showWelcomeMessage: false,
                   showProfile: false,
                   loggedOutMessage: false,
+                  showLogoutConfirm: false,
                 })
               );
             })

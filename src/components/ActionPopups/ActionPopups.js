@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { authDataInfo, userDataInfo } from "../../store";
+import { authDataInfo, userDataInfo, useLogOutMutation } from "../../store";
 import { useImageDelete, useSaveProfile } from "../../hooks";
 import SigninEmailConfirmModal from "../Signin/SigninEmailConfirmModal";
 import MessageModal from "../Message/MessageModal";
@@ -14,6 +14,7 @@ import TreeUpdateForm from "../TreeUpload/TreeUpdateForm";
 const ActionPopups = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [logOut] = useLogOutMutation();
   const [deleteUserTree] = useImageDelete();
   const [saveUserProfile] = useSaveProfile();
   const {
@@ -27,6 +28,7 @@ const ActionPopups = () => {
     showAbout,
     showWorks,
     authUserId,
+    showLogoutConfirm,
   } = useSelector((state) => state.authData);
   const {
     imageUploadError,
@@ -205,6 +207,25 @@ const ActionPopups = () => {
                 },
               })
             }
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {showLogoutConfirm ? (
+          <MessageModal
+            showModal={showLogoutConfirm}
+            dispatchType={() => {
+              dispatch(
+                authDataInfo({
+                  showLogoutConfirm: false,
+                })
+              );
+            }}
+            message={`Are you sure you want to logout?`}
+            modalColor={"bg-gray-600"}
+            actionOnConfirm={() => logOut({ uid: authUserId })}
           />
         ) : (
           ""
