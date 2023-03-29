@@ -41,6 +41,11 @@ const useDrawMap = () => {
 
   useEffect(() => {
     if (data?.length && mapRef.current) {
+      dispatch(
+        userDataInfo({
+          totalTrees: data.length,
+        })
+      );
       data.forEach((t) => {
         let pos = {
           lat: t.latitude,
@@ -55,7 +60,7 @@ const useDrawMap = () => {
         marker.addListener("mouseover", () => popUps(t, marker));
       });
     }
-  }, [data]);
+  }, [data, dispatch]);
 
   useEffect(() => {
     const loader = new Loader({
