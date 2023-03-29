@@ -1,12 +1,62 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 import { useDispatch } from "react-redux";
-import { userDataInfo } from "../store";
+import { userDataInfo, useFetchAllTreesQuery } from "../store";
 const keys = require("../keys.js");
-const trees = require("../mockTrees.json");
 
 const useDrawMap = () => {
+  const { data } = useFetchAllTreesQuery();
   const dispatch = useDispatch();
+  let mapRef = useRef(null);
+  let infowindowRef = useRef(null);
+
+  const popUps = (t, marker) => {
+    let imageString = `<img src='${t.tree_image_link}' alt='' style="height:100px;">`;
+    let contentString;
+    contentString = `<div style="place-content: center;color: black;font-weight: bold;text-align: center">${
+      t.users_tree_name
+        ? `This tree is called ${t.users_tree_name} and `
+        : "This tree"
+    } was planted here ${t.name ? `by ${t.name}` : "by an anonymous patron"}`;
+
+    if (t.date_planted) {
+      contentString += ` on ${`
+        ${t.date_planted.substring(5, 7)}/${t.date_planted.substring(
+        8,
+        10
+      )}/${t.date_planted.substring(0, 4)}`}`;
+    }
+
+    contentString += `.<br><br>${imageString}</div>`;
+    if (infowindowRef.current) {
+      infowindowRef.current.close();
+    }
+
+    infowindowRef.current = new window.google.maps.InfoWindow({
+      content: contentString,
+      maxWidth: 200,
+    });
+    infowindowRef.current.open(mapRef.current, marker);
+  };
+
+  useEffect(() => {
+    if (data?.length && mapRef.current) {
+      data.forEach((t) => {
+        let pos = {
+          lat: t.latitude,
+          lng: t.longitude,
+        };
+        let marker = new window.google.maps.Marker({
+          position: pos,
+          map: mapRef.current,
+          animation: window.google.maps.Animation.DROP,
+          icon: require(`../images/parks_small.png`),
+        });
+        marker.addListener("mouseover", () => popUps(t, marker));
+      });
+    }
+  }, [data]);
+
   useEffect(() => {
     const loader = new Loader({
       apiKey: keys.maps.apiKey,
@@ -23,26 +73,12 @@ const useDrawMap = () => {
     loader
       .load()
       .then((google) => {
-        let map = new google.maps.Map(
+        mapRef.current = new google.maps.Map(
           document.getElementById("map"),
           mapOptions
         );
 
         const infoWindow = new google.maps.InfoWindow();
-        if (trees.length) {
-          trees.map((t) => {
-            const pos = {
-              lat: t.latitude,
-              lng: t.longitude,
-            };
-            return new google.maps.Marker({
-              position: pos,
-              map,
-              animation: google.maps.Animation.DROP,
-              icon: require(`../images/parks_small.png`),
-            });
-          });
-        }
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -59,15 +95,15 @@ const useDrawMap = () => {
               );
               infoWindow.setPosition(pos);
               infoWindow.setContent("You are here.");
-              infoWindow.open(map);
-              map.setCenter(pos);
+              infoWindow.open(mapRef.current);
+              mapRef.current.setCenter(pos);
               new google.maps.Marker({
                 position: pos,
-                map,
+                map: mapRef.current,
               });
             },
             () => {
-              map.getCenter();
+              mapRef.current.getCenter();
             }
           );
         } else {

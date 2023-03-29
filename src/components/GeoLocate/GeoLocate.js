@@ -2,7 +2,11 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { MdClose } from "react-icons/md";
-import { userDataInfo, useSaveUserTreesMutation } from "../../store";
+import {
+  authDataInfo,
+  userDataInfo,
+  useSaveUserTreesMutation,
+} from "../../store";
 
 import useTreeLocate from "../../hooks/use-tree-locate";
 
@@ -36,6 +40,11 @@ const GeoLocate = ({ showGeoLocate }) => {
           image: "",
           imageType: "",
           tree: "",
+        })
+      );
+      dispatch(
+        authDataInfo({
+          showProfile: false,
         })
       );
     }

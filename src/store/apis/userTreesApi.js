@@ -56,6 +56,26 @@ const userTreesApi = createApi({
           };
         },
       }),
+      fetchAllTrees: builder.query({
+        providesTags: (result, error, userTrees) => {
+          let tags;
+          if (result) {
+            tags = result?.map((userTrees) => {
+              return { type: "trees", id: userTrees.userId };
+            });
+            tags.push({ type: "UsersTrees", id: userTrees });
+          } else {
+            tags = [];
+          }
+          return tags;
+        },
+        query: () => {
+          return {
+            url: `/api/eden/userTreesSave/allEdenTrees`,
+            method: "GET",
+          };
+        },
+      }),
     };
   },
 });
@@ -64,5 +84,6 @@ export const {
   useFetchUserTreesQuery,
   useSaveUserTreesMutation,
   useDeleteUserTreeMutation,
+  useFetchAllTreesQuery,
 } = userTreesApi;
 export { userTreesApi };

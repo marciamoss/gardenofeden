@@ -40,6 +40,7 @@ export {
   useSaveUserTreesMutation,
   useFetchUserTreesQuery,
   useDeleteUserTreeMutation,
+  useFetchAllTreesQuery,
 } from "./apis/userTreesApi";
 export {
   useGetImageGeoLocationMutation,
