@@ -39,17 +39,17 @@ const Profile = () => {
           <div
             className={`${
               isLoading ? "animate-pulse bg-stone-900" : ""
-            } h-3/4 border-2 border-white`}
+            } h-3/4 border-2 border-white flex flex-row place-content-center`}
           >
             {profile_image_link ? (
               <img
                 src={profile_image_link}
                 alt="profile"
-                className={`place-content-center ${
+                className={`self-center ${
                   saveUserImageResult.status === "pending" || isFetching
                     ? "animate-pulse"
                     : ""
-                }`}
+                } border-2 border-green-100 w-48 h-48`}
               />
             ) : (
               <CgProfile
