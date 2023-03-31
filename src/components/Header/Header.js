@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MenuDropDown from "../Menu/MenuDropDown";
-import { authDataInfo } from "../../store";
+import { authDataInfo, userDataInfo } from "../../store";
 import { useEmailLinkCompleteQuery } from "../../store";
 import { ImMenu } from "react-icons/im";
 import { GoChevronDown } from "react-icons/go";
@@ -13,6 +13,8 @@ const logo = require(`../../images/tree-earth.png`);
 const Header = () => {
   const dispatch = useDispatch();
   const { signedIn, showMenu } = useSelector((state) => state.authData);
+  const { savedTree } = useSelector((state) => state.userData);
+
   useEmailLinkCompleteQuery({ signedIn });
 
   return (
@@ -42,6 +44,13 @@ const Header = () => {
               <Menu.Button
                 onClick={() => {
                   dispatch(authDataInfo({ showMenu: true }));
+                  if (savedTree) {
+                    dispatch(
+                      userDataInfo({
+                        savedTree: null,
+                      })
+                    );
+                  }
                 }}
                 className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
               >

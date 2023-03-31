@@ -1,16 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { userDataInfo, useFetchAllTreesQuery } from "../store";
 const keys = require("../keys.js");
 
 const useDrawMap = () => {
+  const { savedTree } = useSelector((state) => state.userData);
   const { data } = useFetchAllTreesQuery();
   const dispatch = useDispatch();
+  const [newTree, setNewTree] = useState(null);
   let mapRef = useRef(null);
   let infowindowRef = useRef(null);
+  let markerRef = useRef(null);
 
-  const popUps = (t, marker) => {
+  const popUps = useCallback((t, marker) => {
     let imageString = `<img src='${t.tree_image_link}' alt='' style="height:100px;">`;
     let contentString;
     contentString = `<div style="place-content: center;color: black;font-weight: bold;text-align: center">${
@@ -31,13 +34,30 @@ const useDrawMap = () => {
     if (infowindowRef.current) {
       infowindowRef.current.close();
     }
-
     infowindowRef.current = new window.google.maps.InfoWindow({
       content: contentString,
       maxWidth: 200,
     });
     infowindowRef.current.open(mapRef.current, marker);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (
+      savedTree &&
+      newTree &&
+      newTree.tree_image_link === savedTree.tree_image_link &&
+      newTree.latitude === savedTree.latitude &&
+      newTree.longitude === savedTree.longitude
+    ) {
+      if (mapRef.current) {
+        mapRef.current.setCenter({
+          lat: savedTree.latitude,
+          lng: savedTree.longitude,
+        });
+      }
+      popUps(newTree, markerRef.current);
+    }
+  }, [savedTree, newTree, popUps]);
 
   useEffect(() => {
     if (data?.length && mapRef.current) {
@@ -57,10 +77,12 @@ const useDrawMap = () => {
           animation: window.google.maps.Animation.DROP,
           icon: require(`../images/parks_small.png`),
         });
-        marker.addListener("mouseover", () => popUps(t, marker));
+        marker.addListener("click", () => popUps(t, marker));
+        setNewTree(data[data.length - 1]);
+        markerRef.current = marker;
       });
     }
-  }, [data, dispatch]);
+  }, [data, dispatch, popUps]);
 
   useEffect(() => {
     const loader = new Loader({

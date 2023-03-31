@@ -15,6 +15,7 @@ const initialState = {
   showPicDeleteConfirm: false,
   userLocation: { lat: 0, lng: 0 },
   totalTrees: 0,
+  savedTree: null,
 };
 const userDataSlice = createSlice({
   name: "userData",

@@ -40,6 +40,7 @@ const GeoLocate = ({ showGeoLocate }) => {
           image: "",
           imageType: "",
           tree: "",
+          savedTree: saveUserTreeResult.data,
         })
       );
       dispatch(

@@ -50,7 +50,9 @@ const ActionPopups = () => {
               dispatch(authDataInfo({ showWelcomeMessage: false }));
               navigate("");
             }}
-            message={"Welcome to Garden Of Eden. Please make yourself at home."}
+            message={`Click on a tree and learn all about it and
+            Welcome to Garden Of Eden.
+            Please make yourself at home.`}
             modalColor={"bg-green-900"}
           />
         ) : (
