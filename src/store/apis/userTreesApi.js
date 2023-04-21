@@ -1,11 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const keys = require("../../keys.js");
 
+const pause = (duration) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
+};
 const userTreesApi = createApi({
   reducerPath: "userTrees",
   baseQuery: fetchBaseQuery({
     baseUrl: keys.mongo.api,
     fetchFn: async (...args) => {
+      await pause(1000);
       return fetch(...args);
     },
   }),
