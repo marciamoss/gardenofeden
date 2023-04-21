@@ -77,11 +77,6 @@ const TreeUpdateForm = () => {
                       <button
                         className="text-fuchsia-100 font-bold rounded-full bg-slate-500 hover:bg-sky-700 w-24"
                         onClick={() => {
-                          dispatch(
-                            userDataInfo({
-                              showTreeUpdateForm: false,
-                            })
-                          );
                           openImageUploader({
                             authUserId,
                             imageType: "update_Tree",
@@ -97,16 +92,6 @@ const TreeUpdateForm = () => {
                           dispatch(
                             userDataInfo({
                               showGeoLocate: true,
-                              tree: {
-                                _id: tree._id,
-                                userId: tree.userId,
-                                tree_image_link: tree.tree_image_link,
-                                latitude: tree.latitude,
-                                longitude: tree.longitude,
-                                users_tree_name: tree.users_tree_name,
-                                date_planted: tree.date_planted,
-                                geoAddress: tree.geoAddress,
-                              },
                             })
                           );
                         }}

@@ -100,6 +100,11 @@ const useImageUpload = () => {
           image: "",
           imageType: "",
           tree: "",
+          showTreeUpdateForm: false,
+          savedTree: {
+            ...tree,
+            tree_image_link: updateUserTreeImageResult.data.tree_image_link,
+          },
         })
       );
     }
@@ -113,7 +118,7 @@ const useImageUpload = () => {
         })
       );
     }
-  }, [updateUserTreeImageResult, dispatch]);
+  }, [updateUserTreeImageResult, dispatch, tree]);
 
   return [openImageUploader, saveUserImageResult];
 };

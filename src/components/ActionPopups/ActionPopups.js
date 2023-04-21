@@ -29,6 +29,7 @@ const ActionPopups = () => {
     showWorks,
     authUserId,
     showLogoutConfirm,
+    autoLoggedInMessage,
   } = useSelector((state) => state.authData);
   const {
     imageUploadError,
@@ -39,6 +40,7 @@ const ActionPopups = () => {
     showTreeDeleteConfirm,
     tree,
     showPicDeleteConfirm,
+    showConnectForm,
   } = useSelector((state) => state.userData);
   return (
     <>
@@ -228,6 +230,44 @@ const ActionPopups = () => {
             message={`Are you sure you want to logout?`}
             modalColor={"bg-black"}
             actionOnConfirm={() => logOut({ uid: authUserId })}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {autoLoggedInMessage ? (
+          <MessageModal
+            showModal={autoLoggedInMessage}
+            dispatchType={() => {
+              dispatch(
+                authDataInfo({
+                  autoLoggedInMessage: false,
+                })
+              );
+            }}
+            message={`You are signed in using ${
+              JSON.parse(localStorage.getItem("gardenofeden"))?.userEmail
+            } from previous session, sign out if this is not you.`}
+            modalColor={"bg-green-900"}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
+        {showConnectForm ? (
+          <MessageModal
+            showModal={showConnectForm}
+            dispatchType={() => {
+              dispatch(
+                userDataInfo({
+                  showConnectForm: false,
+                })
+              );
+            }}
+            message={`Connect feature will be made available in future version`}
+            modalColor={"bg-green-900"}
           />
         ) : (
           ""

@@ -33,6 +33,7 @@ export {
   useEmailLinkCompleteQuery,
   useSignInCompleteMutation,
   useLogOutMutation,
+  useCheckAuthStatusMutation,
 } from "./apis/authApi";
 
 export { useSaveUserProfileMutation, useFetchUserQuery } from "./apis/userApi";

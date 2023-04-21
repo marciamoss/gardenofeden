@@ -166,6 +166,39 @@ const authApi = createApi({
           return {};
         },
       }),
+      checkAuthStatus: builder.mutation({
+        queryFn: async ({ authUserId }, { dispatch }) => {
+          const localAuth = JSON.parse(localStorage.getItem("gardenofeden"));
+          if (localAuth?.authUserId) {
+            if (localAuth?.authUserId !== authUserId) {
+              dispatch(
+                authDataInfo({
+                  autoLoggedInMessage: true,
+                  signedIn: true,
+                  authUserId: localAuth.authUserId,
+                  userEmail: localAuth?.userEmail,
+                })
+              );
+            }
+          } else {
+            if (authUserId) {
+              dispatch(
+                authDataInfo({
+                  showProfile: false,
+                  signedIn: false,
+                  authUserId: null,
+                  loggedOutMessage: true,
+                })
+              );
+            }
+          }
+          return {
+            data: {
+              authUserId: localAuth?.authUserId || null,
+            },
+          };
+        },
+      }),
     };
   },
 });
@@ -175,5 +208,6 @@ export const {
   useEmailLinkCompleteQuery,
   useSignInCompleteMutation,
   useLogOutMutation,
+  useCheckAuthStatusMutation,
 } = authApi;
 export { authApi };

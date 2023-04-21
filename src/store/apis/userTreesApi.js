@@ -69,9 +69,9 @@ const userTreesApi = createApi({
           }
           return tags;
         },
-        query: () => {
+        query: ({ authUserId }) => {
           return {
-            url: `/api/eden/userTreesSave/allEdenTrees`,
+            url: `/api/eden/userTreesSave/allEdenTrees:userId:${authUserId}`,
             method: "GET",
           };
         },

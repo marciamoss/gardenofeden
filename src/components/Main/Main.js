@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import "./Main.css";
-import useDrawMap from "../../hooks/use-draw-map";
+import { useDrawMap } from "../../hooks";
 import Profile from "../Profile/Profile";
 
 const Main = () => {
