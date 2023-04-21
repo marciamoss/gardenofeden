@@ -30,6 +30,7 @@ const useDrawMap = () => {
     if (infoActionRef.current) {
       infoActionRef.current.setMap(null);
     }
+    setTreeClicked(null);
     setInfoActionType(null);
   }, []);
 
