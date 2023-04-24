@@ -1,13 +1,16 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { userDataInfo } from "../store";
+import { userDataInfo, useCheckAuthStatusMutation } from "../store";
 
 const useTreeLocate = () => {
   const dispatch = useDispatch();
+  const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
   const { userLocation, tree } = useSelector((state) => state.userData);
+  const { authUserId } = useSelector((state) => state.authData);
   const [approximateGeoAddress, setApproximateGeoAddress] = useState(
     tree.geoAddress || ""
   );
+  const [geocodeLatLng, setGeocodeLatLng] = useState(null);
   const [latitude, setLatitude] = useState(
     tree?.latitude || tree?.latitude_exif || null
   );
@@ -70,7 +73,19 @@ const useTreeLocate = () => {
     },
     [latitude, longitude]
   );
-
+  useEffect(() => {
+    if (checkAuthStatusResult.isSuccess) {
+      if (!authUserId) {
+        dispatch(
+          userDataInfo({
+            showGeoLocate: false,
+          })
+        );
+      } else {
+        geocode({ location: geocodeLatLng });
+      }
+    }
+  }, [checkAuthStatusResult, authUserId, geocodeLatLng]);
   useEffect(() => {
     mapRef.current = new window.google.maps.Map(
       document.getElementById("tree"),
@@ -81,7 +96,8 @@ const useTreeLocate = () => {
       }
     );
     mapRef.current.addListener("click", (e) => {
-      geocode({ location: e.latLng });
+      checkAuthStatus({ authUserId });
+      setGeocodeLatLng(e.latLng);
     });
     setMarker();
   }, [userLocation, geocode]);

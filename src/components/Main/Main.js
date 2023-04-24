@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import "./Main.css";
 import { useDrawMap } from "../../hooks";
 import Profile from "../Profile/Profile";
+import Footer from "../Footer/Footer";
 
 const Main = () => {
   useDrawMap();
@@ -12,6 +13,11 @@ const Main = () => {
     <>
       {showProfile ? <Profile /> : ""}
       <div id="map" className={`${showProfile ? "hidden" : ""} mx-auto`}></div>
+      {!showProfile ? (
+        <Footer className="h-5 bg-red-800 border-2 border-red" />
+      ) : (
+        ""
+      )}
     </>
   );
 };

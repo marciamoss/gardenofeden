@@ -5,7 +5,6 @@ import {
   useOpenImageUploaderMutation,
   useGetImageGeoLocationMutation,
   useSaveUserProfileMutation,
-  useSaveUserTreesMutation,
 } from "../store";
 
 const useImageUpload = () => {
@@ -14,8 +13,7 @@ const useImageUpload = () => {
     useGetImageGeoLocationMutation();
   const [saveUserProfile, saveUserImageResult] = useSaveUserProfileMutation();
   const [openImageUploader] = useOpenImageUploaderMutation();
-  const [saveUserTrees, updateUserTreeImageResult] = useSaveUserTreesMutation();
-  const { image, tree } = useSelector((state) => state.userData);
+  const { image } = useSelector((state) => state.userData);
 
   useEffect(() => {
     if (image && image.imageType === "trees") {
@@ -33,18 +31,6 @@ const useImageUpload = () => {
       });
     }
   }, [image, getImageGeoLocation, saveUserProfile]);
-
-  useEffect(() => {
-    if (image && image.imageType === "update_Tree") {
-      saveUserTrees({
-        edenUserTrees: {
-          userId: image.authUserId,
-          tree_image_link: image.image.url,
-          _id: tree._id,
-        },
-      });
-    }
-  }, [image, tree, saveUserTrees]);
 
   useEffect(() => {
     if (geoLocationResult.error) {
@@ -92,33 +78,6 @@ const useImageUpload = () => {
       );
     }
   }, [saveUserImageResult, dispatch]);
-
-  useEffect(() => {
-    if (updateUserTreeImageResult.isSuccess) {
-      dispatch(
-        userDataInfo({
-          image: "",
-          imageType: "",
-          tree: "",
-          showTreeUpdateForm: false,
-          savedTree: {
-            ...tree,
-            tree_image_link: updateUserTreeImageResult.data.tree_image_link,
-          },
-        })
-      );
-    }
-    if (updateUserTreeImageResult.error) {
-      dispatch(
-        userDataInfo({
-          imageUploadError: true,
-          image: "",
-          imageType: "",
-          tree: "",
-        })
-      );
-    }
-  }, [updateUserTreeImageResult, dispatch, tree]);
 
   return [openImageUploader, saveUserImageResult];
 };

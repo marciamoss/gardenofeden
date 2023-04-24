@@ -9,7 +9,6 @@ import SigninModal from "../Signin/SigninModal";
 import AboutModal from "../About/AboutModal";
 import HowItWorksModal from "../HowItWorks/HowItWorksModal";
 import GeoLocate from "../GeoLocate/GeoLocate";
-import TreeUpdateForm from "../TreeUpload/TreeUpdateForm";
 
 const ActionPopups = () => {
   const dispatch = useDispatch();
@@ -36,7 +35,6 @@ const ActionPopups = () => {
     profileUpdateError,
     showGeoLocate,
     showGeoLocateError,
-    showTreeUpdateForm,
     showTreeDeleteConfirm,
     tree,
     showPicDeleteConfirm,
@@ -166,7 +164,6 @@ const ActionPopups = () => {
           ""
         )}
       </>
-      <>{showTreeUpdateForm ? <TreeUpdateForm /> : ""}</>
       <>
         {showTreeDeleteConfirm ? (
           <MessageModal

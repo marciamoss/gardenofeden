@@ -6,6 +6,7 @@ import useGetProfile from "./use-get-profile";
 import useTreeLocate from "./use-tree-locate";
 import useFormatDate from "./use-format-date";
 import useImageDelete from "./use-image-delete";
+import useUpdateTree from "./use-update-tree";
 
 export {
   useCheckLoginStatus,
@@ -16,4 +17,5 @@ export {
   useTreeLocate,
   useFormatDate,
   useImageDelete,
+  useUpdateTree,
 };

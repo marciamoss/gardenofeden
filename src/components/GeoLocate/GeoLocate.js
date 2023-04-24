@@ -1,89 +1,28 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { MdClose } from "react-icons/md";
-import {
-  authDataInfo,
-  userDataInfo,
-  useSaveUserTreesMutation,
-} from "../../store";
-
-import useTreeLocate from "../../hooks/use-tree-locate";
+import { userDataInfo } from "../../store";
+import { useUpdateTree } from "../../hooks";
 
 const GeoLocate = ({ showGeoLocate }) => {
   const dispatch = useDispatch();
-  const {
-    userId,
-    tree_image_link,
+  const [
     latitude_exif,
     longitude_exif,
-    _id,
-    date_planted,
-    users_tree_name,
-    geoAddress,
-  } = useSelector((state) => state.userData.tree);
-
-  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
-  const [location, setLocation] = useState(geoAddress || "");
-  const [datePlanted, setDatePlanted] = useState(date_planted || "");
-  const [usersTreeName, setUsersTreeName] = useState(users_tree_name || "");
-  const [geocode, clear, latitude, longitude, approximateGeoAddress] =
-    useTreeLocate();
-  const handleLocation = () => geocode({ address: location });
-
-  useEffect(() => {
-    if (saveUserTreeResult.isSuccess) {
-      dispatch(
-        userDataInfo({
-          showGeoLocate: false,
-          showTreeUpdateForm: false,
-          image: "",
-          imageType: "",
-          tree: "",
-          savedTree: saveUserTreeResult.data,
-        })
-      );
-      dispatch(
-        authDataInfo({
-          showProfile: false,
-        })
-      );
-    }
-    if (saveUserTreeResult.error) {
-      dispatch(
-        userDataInfo({
-          imageUploadError: true,
-        })
-      );
-    }
-  }, [saveUserTreeResult, dispatch]);
-
-  useEffect(() => {
-    if (approximateGeoAddress) {
-      setLocation(approximateGeoAddress);
-    }
-  }, [approximateGeoAddress]);
-
-  const savePin = () => {
-    saveUserTrees({
-      edenUserTrees: {
-        _id,
-        userId,
-        tree_image_link,
-        latitude: latitude,
-        longitude: longitude,
-        geoAddress: approximateGeoAddress,
-        users_tree_name: usersTreeName,
-        date_planted: datePlanted,
-      },
-    });
-  };
-  const handleClear = () => {
-    setLocation("");
-    setDatePlanted("");
-    setUsersTreeName("");
-    clear();
-  };
+    checkAuthStatus,
+    location,
+    setLocation,
+    authUserId,
+    setActionType,
+    treeImageLink,
+    usersTreeName,
+    setUsersTreeName,
+    datePlanted,
+    setDatePlanted,
+    latitude,
+    longitude,
+  ] = useUpdateTree();
 
   return (
     <>
@@ -95,7 +34,6 @@ const GeoLocate = ({ showGeoLocate }) => {
             dispatch(
               userDataInfo({
                 showGeoLocate: false,
-                showTreeUpdateForm: false,
                 image: "",
                 imageType: "",
                 tree: "",
@@ -134,7 +72,6 @@ const GeoLocate = ({ showGeoLocate }) => {
                       dispatch(
                         userDataInfo({
                           showGeoLocate: false,
-                          showTreeUpdateForm: false,
                           image: "",
                           imageType: "",
                           tree: "",
@@ -148,8 +85,8 @@ const GeoLocate = ({ showGeoLocate }) => {
                     as="h3"
                     className="font-bold text-sm font-serif leading-6 text-center"
                   >
-                    Click on the Map/Type in the adrress below and click "Save
-                    Pin" when your tree is in desire location.
+                    Click on the Map/Type in the adrress below and click
+                    "Save/Update" when your tree is in desired location.
                     {latitude_exif && longitude_exif ? (
                       <p className="text-yellow-400">
                         location was extracted from the image, move the pin or
@@ -160,68 +97,106 @@ const GeoLocate = ({ showGeoLocate }) => {
                     )}
                   </Dialog.Title>
                   <form onSubmit={(event) => event.preventDefault()}>
-                    <input
-                      type="text"
-                      className="h-8 w-full text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
-                      placeholder="Location"
-                      value={location}
-                      onChange={(event) => {
-                        setLocation(event.target.value);
-                      }}
-                    />
-                    <div className="mt-1 text-yellow-400">
-                      --Date & Name are Optional fields--
-                    </div>
-                    <input
-                      type="date"
-                      className={`${
-                        datePlanted ? "text-black" : "text-gray-400"
-                      } mt-1 h-8 w-1/3 pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none`}
-                      placeholder="Date Planted"
-                      value={datePlanted}
-                      onChange={(event) => setDatePlanted(event.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className="mt-1 ml-2 h-8 w-1/2 right-0 text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
-                      placeholder="Tree Name(15 Char max)"
-                      value={usersTreeName}
-                      maxLength="15"
-                      onChange={(event) => setUsersTreeName(event.target.value)}
-                    />
-                    <div className="mt-1 mb-1">
+                    <div className="grid grid-rows-4 grid-cols-9 gap-1">
+                      <input
+                        type="text"
+                        className="col-span-9 row-span-1 max-[640px]:text-sm h-8 w-full text-black pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none"
+                        placeholder="Location"
+                        value={location}
+                        onChange={(event) => {
+                          setActionType("");
+                          setLocation(event.target.value);
+                        }}
+                      />
+                      <div className="max-[640px]:text-sm mt-1 col-span-8 h-fit row-span-1 rounded-md text-sm text-yellow-400 text-center">
+                        --Date planted & Tree Name are Optional--
+                      </div>
                       <button
-                        disabled={!location}
+                        type="button"
+                        onClick={() => {
+                          checkAuthStatus({ authUserId });
+                          setActionType("image_upload");
+                        }}
+                        className="ml-1 col-span-1 row-span-2 flex flex-row place-content-center rounded-md border-2 w-full h-full text-black relative group"
+                      >
+                        <img
+                          src={treeImageLink}
+                          className="self-center h-14 w-14 max-[640px]:h-5 max-[640px]:w-5"
+                          alt="Tree"
+                        />
+                        <div className="rounded-md opacity-0 group-hover:opacity-75 duration-300 absolute inset-y-0 top-0 flex justify-center items-center text-xs bg-green-100 text-black font-semibold">
+                          Update Image
+                        </div>
+                      </button>
+                      <input
+                        type="text"
+                        className="col-span-4 row-span-1 max-[640px]:text-sm ml-2 pl-2 h-8 text-black rounded-md z-0 focus:shadow focus:outline-none"
+                        placeholder="Tree Name(15 Char max)"
+                        value={usersTreeName}
+                        maxLength="15"
+                        onChange={(event) => {
+                          setActionType("");
+                          setUsersTreeName(event.target.value);
+                        }}
+                      />
+                      <input
+                        type="date"
                         className={`${
-                          !location
-                            ? "bg-slate-500 text-slate-400"
-                            : "bg-violet-50 text-violet-700 hover:bg-violet-100"
-                        } ml-2 w-24 text-sm p-1 rounded-full text-sm font-semibold `}
-                        onClick={handleLocation}
-                      >
-                        Find Location
-                      </button>
-                      <button
-                        disabled={
-                          !(latitude && longitude) &&
-                          !(latitude_exif && longitude_exif)
-                        }
-                        onClick={savePin}
-                        className={`${
-                          !(latitude && longitude) &&
-                          !(latitude_exif && longitude_exif)
-                            ? "bg-slate-500 text-slate-400"
-                            : "bg-violet-50 text-violet-700 hover:bg-violet-100"
-                        } ml-2 w-24 text-sm p-1 rounded-full text-sm font-semibold `}
-                      >
-                        Save Pin
-                      </button>
-                      <button
-                        className="ml-2 bg-violet-50 w-24 text-sm p-1 text-slate-500 rounded-full text-sm font-semibold text-violet-700 hover:bg-violet-100"
-                        onClick={handleClear}
-                      >
-                        Clear
-                      </button>
+                          datePlanted ? "text-black" : "text-gray-400"
+                        } col-span-4 row-span-1 max-[640px]:text-sm h-8 w-full pl-2 pr-0 rounded-lg z-0 focus:shadow focus:outline-none`}
+                        placeholder="Date Planted"
+                        value={datePlanted}
+                        onChange={(event) => {
+                          setActionType("");
+                          setDatePlanted(event.target.value);
+                        }}
+                      />
+                      <div className="mt-2 col-span-9 row-span-1 rounded-md">
+                        <button
+                          type="button"
+                          disabled={!location}
+                          className={`${
+                            !location
+                              ? "bg-slate-500 text-slate-400"
+                              : "bg-violet-50 text-violet-700 hover:bg-violet-100"
+                          } ml-2 w-24 text-sm p-1 rounded-full text-sm font-semibold max-[640px]:text-sm`}
+                          onClick={() => {
+                            checkAuthStatus({ authUserId });
+                            setActionType("locate");
+                          }}
+                        >
+                          Find Location
+                        </button>
+                        <button
+                          type="button"
+                          disabled={
+                            !(latitude && longitude) &&
+                            !(latitude_exif && longitude_exif)
+                          }
+                          onClick={() => {
+                            checkAuthStatus({ authUserId });
+                            setActionType("save");
+                          }}
+                          className={`${
+                            !(latitude && longitude) &&
+                            !(latitude_exif && longitude_exif)
+                              ? "bg-slate-500 text-slate-400"
+                              : "bg-violet-50 text-violet-700 hover:bg-violet-100"
+                          } ml-2 w-24 text-sm p-1 rounded-full text-sm font-semibold max-[640px]:text-sm`}
+                        >
+                          Save/Update
+                        </button>
+                        <button
+                          type="button"
+                          className="ml-2 bg-violet-50 w-24 text-sm p-1 text-slate-500 rounded-full text-sm font-semibold text-violet-700 hover:bg-violet-100 max-[640px]:text-sm"
+                          onClick={() => {
+                            checkAuthStatus({ authUserId });
+                            setActionType("clear_fields");
+                          }}
+                        >
+                          Clear
+                        </button>
+                      </div>
                     </div>
                   </form>
                   <div id="tree" className="mt-2 w-3xl h-96"></div>

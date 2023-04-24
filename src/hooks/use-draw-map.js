@@ -14,11 +14,11 @@ const useDrawMap = () => {
   const { savedTree } = useSelector((state) => state.userData);
   const { authUserId } = useSelector((state) => state.authData);
   const { data } = useFetchAllTreesQuery({ authUserId });
-  const [checkAuthStatus] = useCheckAuthStatusMutation();
+
+  const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
   const dispatch = useDispatch();
   const [treeClicked, setTreeClicked] = useState(null);
   const [allTrees, setAllTrees] = useState(null);
-
   const [infoActionType, setInfoActionType] = useState(null);
   let mapRef = useRef(null);
   let infowindowRef = useRef(null);
@@ -126,7 +126,7 @@ const useDrawMap = () => {
 
   useEffect(() => {
     let updatedTree;
-    if (treeClicked) {
+    if (treeClicked && checkAuthStatusResult.isSuccess) {
       updatedTree = allTrees?.filter((t) => t._id === treeClicked?._id)[0];
       popUps({
         t: updatedTree,
@@ -141,7 +141,7 @@ const useDrawMap = () => {
               date_planted: treeClicked.date_planted?.substring(0, 10),
               authUserId,
             },
-            showTreeUpdateForm: true,
+            showGeoLocate: true,
           })
         );
       }
@@ -153,7 +153,15 @@ const useDrawMap = () => {
         );
       }
     }
-  }, [authUserId, allTrees, treeClicked, popUps, infoActionType, dispatch]);
+  }, [
+    authUserId,
+    allTrees,
+    treeClicked,
+    popUps,
+    infoActionType,
+    dispatch,
+    checkAuthStatusResult,
+  ]);
 
   useEffect(() => {
     if (savedTree) {

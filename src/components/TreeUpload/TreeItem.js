@@ -36,7 +36,7 @@ const TreeItem = ({ image }) => {
                   ...image,
                   date_planted: image.date_planted?.substring(0, 10),
                 },
-                showTreeUpdateForm: true,
+                showGeoLocate: true,
               })
             );
           }}
