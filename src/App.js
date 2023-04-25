@@ -1,5 +1,4 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header/Header";
 import Main from "./components/Main/Main";
