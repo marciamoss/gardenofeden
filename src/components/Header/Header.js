@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MenuDropDown from "../Menu/MenuDropDown";
 import { authDataInfo } from "../../store";
@@ -7,12 +7,22 @@ import { ImMenu } from "react-icons/im";
 import { GoChevronDown } from "react-icons/go";
 import { Menu } from "@headlessui/react";
 import ActionPopups from "../ActionPopups/ActionPopups";
+import { useCheckAuthStatusMutation } from "../../store";
 
 const logo = require(`../../images/tree-earth.png`);
 
 const Header = () => {
   const dispatch = useDispatch();
-  const { signedIn, showMenu } = useSelector((state) => state.authData);
+  const { signedIn, showMenu, authUserId } = useSelector(
+    (state) => state.authData
+  );
+  const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
+
+  useEffect(() => {
+    if (checkAuthStatusResult.isSuccess) {
+      dispatch(authDataInfo({ showMenu: true }));
+    }
+  }, [checkAuthStatusResult, authUserId, dispatch]);
 
   useEmailLinkCompleteQuery({ signedIn });
 
@@ -41,7 +51,7 @@ const Header = () => {
           >
             <div>
               <Menu.Button
-                onClick={() => dispatch(authDataInfo({ showMenu: true }))}
+                onClick={() => checkAuthStatus({ authUserId })}
                 className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
               >
                 <ImMenu className="text-lg font-bold max-[640px]:text-sm max-[280px]:text-xs" />

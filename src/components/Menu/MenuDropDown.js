@@ -1,18 +1,21 @@
-import { Fragment, useState } from "react";
-import { useDispatch } from "react-redux";
-import { authDataInfo } from "../../store";
+import { Fragment, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { authDataInfo, useCheckAuthStatusMutation } from "../../store";
 import "./MenuDropDown.css";
 import { Menu, Transition } from "@headlessui/react";
 import { CgProfile } from "react-icons/cg";
 
 const MenuDropDown = () => {
   const dispatch = useDispatch();
-  const [signedIn] = useState(
-    JSON.parse(window.localStorage.getItem("gardenofeden"))?.authUserId
-      ? true
-      : false
-  );
-
+  const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
+  const { signedIn, authUserId } = useSelector((state) => state.authData);
+  useEffect(() => {
+    if (checkAuthStatusResult.isSuccess) {
+      if (!authUserId) {
+        dispatch(authDataInfo({ showSignin: true }));
+      }
+    }
+  }, [checkAuthStatusResult, authUserId, dispatch]);
   return (
     <>
       <Transition
@@ -75,13 +78,7 @@ const MenuDropDown = () => {
                     className={`${
                       active ? "bg-sky-500 text-white" : "text-gray-900"
                     } group flex w-full items-center rounded-md px-2 py-2 text-sm font-bold max-[280px]:text-xs`}
-                    onClick={() =>
-                      dispatch(
-                        authDataInfo({
-                          showSignin: true,
-                        })
-                      )
-                    }
+                    onClick={() => checkAuthStatus({ authUserId })}
                   >
                     Sign Up/In
                   </button>
