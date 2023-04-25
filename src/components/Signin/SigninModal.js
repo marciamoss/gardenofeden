@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -10,10 +10,16 @@ import { MdClose } from "react-icons/md";
 
 const SigninModal = () => {
   const dispatch = useDispatch();
+  const emailRef = useRef(null);
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
   const [email, setEmail] = useState("");
   const [logIn] = useLogInMutation();
   const { showSignin, authUserId } = useSelector((state) => state.authData);
+  useEffect(() => {
+    if (emailRef.current) {
+      emailRef.current.focus();
+    }
+  }, []);
   useEffect(() => {
     if (checkAuthStatusResult.isSuccess) {
       dispatch(
@@ -94,6 +100,7 @@ const SigninModal = () => {
                   >
                     <div className="mt-2 font-serif">
                       <input
+                        ref={emailRef}
                         type="text"
                         className="h-14 max-[280px]:text-xs max-[280px]:h-10 w-full text-black pl-2 pr-2 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Email"

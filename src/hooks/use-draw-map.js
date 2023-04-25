@@ -184,6 +184,10 @@ const useDrawMap = () => {
 
   useEffect(() => {
     if (data?.length && mapRef.current) {
+      let markerAnimation = false;
+      if (markers.current.length === 0) {
+        markerAnimation = true;
+      }
       clearMarkers();
       dispatch(
         userDataInfo({
@@ -198,7 +202,7 @@ const useDrawMap = () => {
         let marker = new window.google.maps.Marker({
           position: pos,
           map: mapRef.current,
-          animation: window.google.maps.Animation.DROP,
+          animation: markerAnimation ? window.google.maps.Animation.DROP : "",
           icon: t.currentUserTree
             ? require(`../images/xmas_tree.png`)
             : require(`../images/parks_small.png`),
