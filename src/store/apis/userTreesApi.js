@@ -75,6 +75,32 @@ const userTreesApi = createApi({
             method: "GET",
           };
         },
+        transformResponse: (response) => {
+          let duplicateMarkers = [];
+          response.forEach((t) => {
+            let dup = response.filter(
+              (element) =>
+                element.latitude === t.latitude &&
+                element.longitude === t.longitude
+            );
+            if (dup.length > 1) {
+              dup = [...dup].map((t, index) => ({
+                ...t,
+                latitude: t.latitude + 0.000005 * index,
+              }));
+              duplicateMarkers = [...duplicateMarkers, ...dup];
+              response = response.filter(
+                (t) =>
+                  t.latitude !== dup[0].latitude &&
+                  t.longitude !== dup[0].longitude
+              );
+            }
+          });
+          if (duplicateMarkers.length) {
+            response = [...response, ...duplicateMarkers];
+          }
+          return response;
+        },
       }),
     };
   },

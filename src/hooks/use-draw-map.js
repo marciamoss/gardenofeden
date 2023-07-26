@@ -26,6 +26,7 @@ const useDrawMap = () => {
   let infowindowRef = useRef(null);
   let markerRef = useRef(null);
   const markers = useRef([]);
+  let maxZoomService = useRef(null);
 
   const infoClear = useCallback(() => {
     setTreeClicked(null);
@@ -48,6 +49,21 @@ const useDrawMap = () => {
     ({ t, marker, authUserId }) => {
       if (infowindowRef.current) {
         infowindowRef.current.close();
+      }
+      if (maxZoomService.current) {
+        maxZoomService.current.getMaxZoomAtLatLng(
+          {
+            lat: t.latitude,
+            lng: t.longitude,
+          },
+          (result) => {
+            if (result.status !== "OK") {
+              mapRef.current.setZoom(20);
+            } else {
+              mapRef.current.setZoom(result.zoom * 2);
+            }
+          }
+        );
       }
       let div = document.createElement("div");
       const root = ReactDOM.createRoot(div);
@@ -72,9 +88,6 @@ const useDrawMap = () => {
           lat: t.latitude,
           lng: t.longitude,
         });
-        if (mapRef.current.getZoom() < 10 && authUserId) {
-          mapRef.current.setZoom(10);
-        }
       });
     },
     [infoClear]
@@ -204,6 +217,7 @@ const useDrawMap = () => {
           document.getElementById("map"),
           mapOptions
         );
+        maxZoomService.current = new window.google.maps.MaxZoomService();
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -219,10 +233,6 @@ const useDrawMap = () => {
                 })
               );
               mapRef.current.setCenter(pos);
-              new google.maps.Marker({
-                position: pos,
-                map: mapRef.current,
-              });
             },
             () => {
               mapRef.current.getCenter();

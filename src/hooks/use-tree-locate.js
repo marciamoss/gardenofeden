@@ -85,7 +85,7 @@ const useTreeLocate = () => {
         geocode({ location: geocodeLatLng });
       }
     }
-  }, [checkAuthStatusResult, authUserId, geocodeLatLng]);
+  }, [checkAuthStatusResult, authUserId, geocodeLatLng, dispatch, geocode]);
   useEffect(() => {
     mapRef.current = new window.google.maps.Map(
       document.getElementById("tree"),
@@ -100,7 +100,7 @@ const useTreeLocate = () => {
       setGeocodeLatLng(e.latLng);
     });
     setMarker();
-  }, [userLocation, geocode]);
+  }, [userLocation, geocode, authUserId, checkAuthStatus]);
 
   useEffect(() => {
     if (latitude && longitude) {
