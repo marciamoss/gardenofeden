@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { Provider } from "react-redux";
 import { Loader } from "@googlemaps/js-api-loader";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { useSelector, useDispatch } from "react-redux";
 import {
   userDataInfo,
@@ -16,7 +17,6 @@ const useDrawMap = () => {
   const { savedTree } = useSelector((state) => state.userData);
   const { authUserId } = useSelector((state) => state.authData);
   const { data } = useFetchAllTreesQuery({ authUserId });
-
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
   const dispatch = useDispatch();
   const [treeClicked, setTreeClicked] = useState(null);
@@ -27,6 +27,8 @@ const useDrawMap = () => {
   let markerRef = useRef(null);
   const markers = useRef([]);
   let maxZoomService = useRef(null);
+  let markerClusterRef = useRef(null);
+  const [redrawMarker, setRedrawMarker] = useState(false);
 
   const infoClear = useCallback(() => {
     setTreeClicked(null);
@@ -34,22 +36,61 @@ const useDrawMap = () => {
   }, []);
 
   const clearMarkers = useCallback(() => {
+    if (markerClusterRef.current) {
+      markerClusterRef.current.removeMarkers(markers.current);
+      markerClusterRef.current.clearMarkers();
+    }
     if (markers.current.length > 0) {
       for (let i = 0; i < markers.current.length; i++) {
         markers.current[i].setMap(null);
       }
     }
+
     markers.current = [];
-    if (mapRef.current) {
-      mapRef.current.setZoom(2.5);
-    }
   }, [markers]);
+
+  const createMarker = useCallback(
+    ({
+      position,
+      icon,
+      animation = "",
+      title,
+      markerTree,
+      authUserId,
+      map,
+      label,
+      zIndex,
+    }) => {
+      let marker = new window.google.maps.Marker({
+        position,
+        map,
+        icon,
+        animation,
+        title,
+        label,
+        zIndex,
+      });
+      if (markerTree) {
+        marker.addListener("click", () => {
+          markerRef.current = marker;
+          setTreeClicked(markerTree);
+          checkAuthStatus({ authUserId });
+        });
+      }
+      return marker;
+    },
+    [checkAuthStatus]
+  );
 
   const popUps = useCallback(
     ({ t, marker, authUserId }) => {
       if (infowindowRef.current) {
         infowindowRef.current.close();
       }
+      mapRef.current.setCenter({
+        lat: t.latitude,
+        lng: t.longitude,
+      });
       if (maxZoomService.current) {
         maxZoomService.current.getMaxZoomAtLatLng(
           {
@@ -82,13 +123,6 @@ const useDrawMap = () => {
       infowindowRef.current.setContent(div);
       infowindowRef.current.addListener("closeclick", () => infoClear());
       infowindowRef.current.open(mapRef.current, marker);
-
-      infowindowRef.current.addListener("visible", () => {
-        mapRef.current.setCenter({
-          lat: t.latitude,
-          lng: t.longitude,
-        });
-      });
     },
     [infoClear]
   );
@@ -98,7 +132,6 @@ const useDrawMap = () => {
     if (treeClicked) {
       updatedTree = allTrees?.filter((t) => t._id === treeClicked?._id)[0];
       setTreeClicked(updatedTree);
-
       popUps({
         t: updatedTree,
         marker: markerRef.current,
@@ -167,19 +200,16 @@ const useDrawMap = () => {
           lat: t.latitude,
           lng: t.longitude,
         };
-        let marker = new window.google.maps.Marker({
+        let marker = createMarker({
           position: pos,
-          map: mapRef.current,
-          animation: markerAnimation ? window.google.maps.Animation.DROP : "",
           icon: t.currentUserTree
             ? require(`../images/xmas_tree.png`)
             : require(`../images/parks_small.png`),
-        });
-
-        marker.addListener("click", () => {
-          markerRef.current = marker;
-          setTreeClicked(t);
-          checkAuthStatus({ authUserId });
+          animation: markerAnimation ? window.google.maps.Animation.DROP : "",
+          title: t._id,
+          markerTree: t,
+          authUserId,
+          map: mapRef.current,
         });
         if (t._id === savedTree?._id) {
           markerRef.current = marker;
@@ -187,6 +217,15 @@ const useDrawMap = () => {
         markers.current = [...markers.current, marker];
       });
       setAllTrees(data);
+      if (markerClusterRef.current) {
+        markerClusterRef.current.addMarkers(markers.current);
+        if (infowindowRef.current && markerRef.current) {
+          markerRef.current =
+            markers.current[
+              data.findIndex((t) => t._id === markerRef.current.getTitle())
+            ];
+        }
+      }
     }
   }, [
     data,
@@ -195,6 +234,34 @@ const useDrawMap = () => {
     savedTree?._id,
     checkAuthStatus,
     authUserId,
+    createMarker,
+  ]);
+
+  useEffect(() => {
+    if (redrawMarker) {
+      markerClusterRef.current.removeMarker(markerRef.current, true);
+      let marker = createMarker({
+        position: markerRef.current.getPosition(),
+        icon: markerRef.current.getIcon(),
+        title: markerRef.current.getTitle(),
+        markerTree: treeClicked,
+        authUserId,
+        map: mapRef.current,
+      });
+      markers.current[markers.current.indexOf(markerRef.current)] = marker;
+      markerClusterRef.current.addMarker(marker);
+      setRedrawMarker(false);
+      infoClear();
+      infowindowRef.current = null;
+      markerRef.current = null;
+    }
+  }, [
+    redrawMarker,
+    authUserId,
+    checkAuthStatus,
+    infoClear,
+    treeClicked,
+    createMarker,
   ]);
 
   useEffect(() => {
@@ -217,35 +284,52 @@ const useDrawMap = () => {
           document.getElementById("map"),
           mapOptions
         );
-        maxZoomService.current = new window.google.maps.MaxZoomService();
-
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
+          navigator.geolocation.getCurrentPosition((position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
 
-              dispatch(
-                userDataInfo({
-                  userLocation: pos,
-                })
-              );
-              mapRef.current.setCenter(pos);
-            },
-            () => {
-              mapRef.current.getCenter();
-            }
-          );
+            dispatch(
+              userDataInfo({
+                userLocation: pos,
+              })
+            );
+            mapRef.current.setCenter(pos);
+          });
         } else {
           console.log("Browser doesn't support Geolocation");
         }
+        maxZoomService.current = new window.google.maps.MaxZoomService();
+        markerClusterRef.current = new MarkerClusterer({
+          map: mapRef.current,
+          renderer: {
+            render: ({ count, position }) => {
+              if (infowindowRef.current && !markerRef.current.getMap()) {
+                setRedrawMarker(true);
+              }
+              return createMarker({
+                icon: {
+                  url: require(`../images/parks_big.png`),
+                },
+                label: {
+                  text: String(count),
+                  color: "black",
+                  fontSize: "12px",
+                  fontWeight: "bolder",
+                },
+                position,
+                zIndex: Number(window.google.maps.Marker.MAX_ZINDEX) + count,
+              });
+            },
+          },
+        });
       })
       .catch((e) => {
         console.log("error", e);
       });
-  }, [dispatch]);
+  }, [dispatch, createMarker]);
 };
 
 export default useDrawMap;
