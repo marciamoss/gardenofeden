@@ -77,23 +77,26 @@ const userTreesApi = createApi({
         },
         transformResponse: (response) => {
           let duplicateMarkers = [];
+
           response.forEach((t) => {
+            t.displayLat = t.latitude;
+            t.displayLng = t.longitude;
+
             let dup = response.filter(
               (element) =>
                 element.latitude === t.latitude &&
                 element.longitude === t.longitude
             );
             if (dup.length > 1) {
-              dup = [...dup].map((t, index) => ({
-                ...t,
-                latitude: t.latitude + 0.000005 * index,
-              }));
+              dup = [...dup].map((t, index) => {
+                response = response.filter((r) => t._id !== r._id);
+                return {
+                  ...t,
+                  displayLat: t.latitude + 0.00001 * index,
+                  displayLng: t.longitude,
+                };
+              });
               duplicateMarkers = [...duplicateMarkers, ...dup];
-              response = response.filter(
-                (t) =>
-                  t.latitude !== dup[0].latitude &&
-                  t.longitude !== dup[0].longitude
-              );
             }
           });
           if (duplicateMarkers.length) {

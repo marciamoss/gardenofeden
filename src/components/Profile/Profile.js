@@ -15,12 +15,8 @@ import {
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { authUserId, showProfileUpdateForm } = useSelector((state) => {
-    return {
-      authUserId: state.authData.authUserId,
-      showProfileUpdateForm: state.userData.showProfileUpdateForm,
-    };
-  });
+  const { authUserId } = useSelector((state) => state.authData);
+  const { showProfileUpdateForm } = useSelector((state) => state.userData);
   const [name, location, bio, profile_image_link, isFetching, isLoading] =
     useGetProfile({
       authUserId,

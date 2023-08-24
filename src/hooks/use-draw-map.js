@@ -14,7 +14,7 @@ import InfoWindow from "../components/Main/InfoWindow";
 const keys = require("../keys.js");
 
 const useDrawMap = () => {
-  const { savedTree } = useSelector((state) => state.userData);
+  const { savedTree, deletedTree } = useSelector((state) => state.userData);
   const { authUserId } = useSelector((state) => state.authData);
   const { data } = useFetchAllTreesQuery({ authUserId });
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
@@ -29,6 +29,7 @@ const useDrawMap = () => {
   let maxZoomService = useRef(null);
   let markerClusterRef = useRef(null);
   const [redrawMarker, setRedrawMarker] = useState(false);
+  const [mapLoadComplete, setMapLoadComplete] = useState(false);
 
   const infoClear = useCallback(() => {
     setTreeClicked(null);
@@ -82,20 +83,24 @@ const useDrawMap = () => {
     [checkAuthStatus]
   );
 
+  const closePopUps = () => {
+    if (infowindowRef.current) {
+      infowindowRef.current.close();
+    }
+  };
+
   const popUps = useCallback(
     ({ t, marker, authUserId }) => {
-      if (infowindowRef.current) {
-        infowindowRef.current.close();
-      }
+      closePopUps();
       mapRef.current.setCenter({
-        lat: t.latitude,
-        lng: t.longitude,
+        lat: t.displayLat,
+        lng: t.displayLng,
       });
       if (maxZoomService.current) {
         maxZoomService.current.getMaxZoomAtLatLng(
           {
-            lat: t.latitude,
-            lng: t.longitude,
+            lat: t.displayLat,
+            lng: t.displayLng,
           },
           (result) => {
             if (result.status !== "OK") {
@@ -126,6 +131,14 @@ const useDrawMap = () => {
     },
     [infoClear]
   );
+
+  useEffect(() => {
+    if (deletedTree && deletedTree._id === treeClicked._id) {
+      closePopUps();
+      infoClear();
+      dispatch(userDataInfo({ deletedTree: "" }));
+    }
+  }, [deletedTree, infoClear, treeClicked, dispatch]);
 
   useEffect(() => {
     let updatedTree;
@@ -168,23 +181,19 @@ const useDrawMap = () => {
     if (savedTree) {
       let newTree = allTrees?.filter((t) => t._id === savedTree?._id)[0];
       if (newTree) {
+        setTreeClicked(newTree);
         if (mapRef.current) {
           mapRef.current.setCenter({
-            lat: savedTree.latitude,
-            lng: savedTree.longitude,
+            lat: newTree.displayLat,
+            lng: newTree.displayLng,
           });
         }
-        popUps({
-          t: newTree,
-          marker: markerRef.current,
-          authUserId,
-        });
       }
     }
   }, [savedTree, allTrees, popUps, authUserId]);
 
   useEffect(() => {
-    if (data?.length && mapRef.current) {
+    if (data?.length && mapRef.current && mapLoadComplete) {
       let markerAnimation = false;
       if (markers.current.length === 0) {
         markerAnimation = true;
@@ -197,8 +206,8 @@ const useDrawMap = () => {
       );
       data.forEach((t) => {
         let pos = {
-          lat: t.latitude,
-          lng: t.longitude,
+          lat: t.displayLat,
+          lng: t.displayLng,
         };
         let marker = createMarker({
           position: pos,
@@ -235,6 +244,7 @@ const useDrawMap = () => {
     checkAuthStatus,
     authUserId,
     createMarker,
+    mapLoadComplete,
   ]);
 
   useEffect(() => {
@@ -284,6 +294,10 @@ const useDrawMap = () => {
           document.getElementById("map"),
           mapOptions
         );
+        mapRef.current.addListener("click", () => {
+          closePopUps();
+          infoClear();
+        });
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition((position) => {
             const pos = {
@@ -325,11 +339,12 @@ const useDrawMap = () => {
             },
           },
         });
+        setMapLoadComplete(true);
       })
       .catch((e) => {
         console.log("error", e);
       });
-  }, [dispatch, createMarker]);
+  }, [dispatch, createMarker, infoClear]);
 };
 
 export default useDrawMap;

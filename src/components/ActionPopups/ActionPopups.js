@@ -179,7 +179,10 @@ const ActionPopups = () => {
             }}
             message={`Are you sure you want to delete this image`}
             modalColor={"bg-black"}
-            actionOnConfirm={() => deleteUserTree({ tree })}
+            actionOnConfirm={() => {
+              dispatch(userDataInfo({ deletedTree: tree }));
+              deleteUserTree({ tree });
+            }}
           />
         ) : (
           ""

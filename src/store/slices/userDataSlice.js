@@ -11,6 +11,7 @@ const initialState = {
   profileUpdateErrorMessage: "",
   showProfileUpdateForm: false,
   showTreeDeleteConfirm: false,
+  deletedTree: "",
   showPicDeleteConfirm: false,
   userLocation: { lat: 0, lng: 0 },
   totalTrees: 0,
