@@ -174,6 +174,7 @@ const authApi = createApi({
               dispatch(
                 authDataInfo({
                   autoLoggedInMessage: true,
+                  showSignin: false,
                   signedIn: true,
                   authUserId: localAuth.authUserId,
                   userEmail: localAuth?.userEmail,

@@ -1,18 +1,21 @@
-import { useFetchUserQuery } from "../store";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { userDataInfo, useFetchUserQuery } from "../store";
 
 const useGetProfile = ({ authUserId }) => {
-  const { data, isFetching, isLoading } = useFetchUserQuery(authUserId);
-  let name,
-    location,
-    bio,
-    profile_image_link = null;
-  if (data) {
-    name = data[0]?.name;
-    location = data[0]?.location;
-    bio = data[0]?.bio;
-    profile_image_link = data[0]?.profile_image_link;
-  }
-  return [name, location, bio, profile_image_link, isFetching, isLoading];
+  const dispatch = useDispatch();
+  const { data } = useFetchUserQuery(authUserId);
+  useEffect(() => {
+    if (data) {
+      const { name, location, bio, profile_image_link } = data[0];
+
+      dispatch(
+        userDataInfo({
+          user: { name, location, bio, profile_image_link },
+        })
+      );
+    }
+  }, [data, dispatch]);
 };
 
 export default useGetProfile;

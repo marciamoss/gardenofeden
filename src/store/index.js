@@ -44,6 +44,6 @@ export {
   useFetchAllTreesQuery,
 } from "./apis/userTreesApi";
 export {
-  useGetImageGeoLocationMutation,
-  useOpenImageUploaderMutation,
+  useCreateImageUrlMutation,
+  useDeletePreviousVersionMutation,
 } from "./apis/imageProcessingApi";

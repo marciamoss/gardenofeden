@@ -1,8 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import * as filestack from "filestack-js";
-import { userDataInfo } from "../";
+import * as AWS from "aws-sdk";
+
 const keys = require("../../keys.js");
-const client = filestack.init(keys.fileStack.apiKey, keys.clientOptions);
+const Buffer = require("buffer/").Buffer;
+const s3 = new AWS.S3({
+  accessKeyId: keys.aws.accessKeyId,
+  secretAccessKey: keys.aws.secretAccessKey,
+  region: keys.aws.region,
+});
 
 const imageProcessingApi = createApi({
   reducerPath: "imageProcessing",
@@ -14,106 +19,76 @@ const imageProcessingApi = createApi({
   }),
   endpoints(builder) {
     return {
-      openImageUploader: builder.mutation({
-        queryFn: async ({ authUserId, imageType }, { dispatch }) => {
-          try {
-            client
-              .picker({
-                accept: ["jpg", "png", "gif"],
-                cleanupImageExif: false,
-                onUploadDone: (res) => {
-                  dispatch(
-                    userDataInfo({
-                      image: {
-                        image: res.filesUploaded[0],
-                        authUserId,
-                        imageType,
-                      },
-                    })
-                  );
-                },
-                onFileUploadFailed: (fail) => {
-                  dispatch(
-                    userDataInfo({
-                      imageUploadError: true,
-                      imageUploadErrorMessage: fail.message,
-                    })
-                  );
-                },
-              })
-              .open();
-          } catch (err) {
+      createImageUrl: builder.mutation({
+        queryFn: async (
+          { imageLink, userDataInfo, authUserId, imageType },
+          { dispatch }
+        ) => {
+          const buf = Buffer.from(imageLink.split(", ")[1], "base64");
+          const fileName = `${authUserId}${Math.floor(
+            Math.random() * 899999 + 100000
+          )}${Date.now()}.jpeg`;
+          const params = {
+            Bucket: keys.aws.bucket,
+            Key: fileName,
+            ACL: "public-read",
+            Body: buf,
+            ContentType: "image/jpeg",
+          };
+
+          return s3.upload(params, {}, (error, { Location }) => {
+            if (error) {
+              dispatch(
+                userDataInfo({
+                  imageUploadError: true,
+                })
+              );
+            }
             dispatch(
               userDataInfo({
-                imageUploadError: true,
-                imageUploadErrorMessage: err.message,
+                imageUrl: Location,
               })
             );
-          }
-          return {};
+          });
         },
       }),
-      getImageGeoLocation: builder.mutation({
-        queryFn: async ({ authUserId, upload }, { dispatch }) => {
-          let latitudeArray = [];
-          let longitudeArray = [];
-          let latitude = null;
-          let longitude = null;
-          let exifData = await client.metadata(
-            upload.handle,
-            { exif: true },
-            keys.clientOptions
+      deletePreviousVersion: builder.mutation({
+        queryFn: async ({ key }, { dispatch }) => {
+          return s3.listObjectVersions(
+            { Bucket: keys.aws.bucket, Prefix: key },
+            (error, { Versions }) => {
+              let versions = [];
+              Versions.forEach(async (v) => {
+                versions = [...versions, { versionId: v.VersionId, key }];
+              });
+              dispatch(
+                imageProcessingApi.endpoints.deleteImageUrl.initiate({
+                  versions,
+                  callback: () => {},
+                })
+              );
+            }
           );
-          let latitudeRef = exifData.exif["GPS GPSLatitudeRef"];
-          latitudeArray = exifData.exif["GPS GPSLatitude"]?.substring(1);
-          if (latitudeArray && longitudeArray) {
-            latitudeArray = latitudeArray.slice(0, -1).split(", ");
-            let longitudeRef = exifData.exif["GPS GPSLongitudeRef"];
-            longitudeArray = exifData.exif["GPS GPSLongitude"]?.substring(1);
-            longitudeArray = longitudeArray.slice(0, -1).split(", ");
-            latitude = await dispatch(
-              imageProcessingApi.endpoints.gpsCoords.initiate({
-                degrees: latitudeArray[0],
-                minutes: latitudeArray[1],
-                seconds:
-                  latitudeArray[2].split("/")[0] /
-                  latitudeArray[2].split("/")[1],
-                direction: latitudeRef,
-              })
-            ).unwrap();
-            longitude = await dispatch(
-              imageProcessingApi.endpoints.gpsCoords.initiate({
-                degrees: longitudeArray[0],
-                minutes: longitudeArray[1],
-                seconds:
-                  longitudeArray[2].split("/")[0] /
-                  longitudeArray[2].split("/")[1],
-                direction: longitudeRef,
-              })
-            ).unwrap();
-          }
-          return {
-            data: {
-              image_link: upload.url,
-              latitude,
-              longitude,
-              authUserId,
-            },
-          };
         },
       }),
-      gpsCoords: builder.mutation({
-        queryFn: ({ degrees, minutes, seconds, direction }) => {
-          var dd = parseInt(degrees) + minutes / 60 + seconds / 3600;
-          if (direction === "S" || direction === "W") {
-            dd = dd * -1;
-          }
-          return { data: dd };
+      deleteImageUrl: builder.mutation({
+        queryFn: async ({ versions, callback }) => {
+          versions.forEach((v) => {
+            s3.deleteObject(
+              {
+                Bucket: keys.aws.bucket,
+                Key: v.key,
+                VersionId: v.versionId,
+              },
+              callback
+            );
+          });
+          return { data: null };
         },
       }),
     };
   },
 });
-export const { useOpenImageUploaderMutation, useGetImageGeoLocationMutation } =
+export const { useCreateImageUrlMutation, useDeletePreviousVersionMutation } =
   imageProcessingApi;
 export { imageProcessingApi };

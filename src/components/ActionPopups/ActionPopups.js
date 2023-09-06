@@ -1,7 +1,12 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { authDataInfo, userDataInfo, useLogOutMutation } from "../../store";
+import {
+  authDataInfo,
+  userDataInfo,
+  useLogOutMutation,
+  useDeletePreviousVersionMutation,
+} from "../../store";
 import { useImageDelete, useSaveProfile } from "../../hooks";
 import SigninEmailConfirmModal from "../Signin/SigninEmailConfirmModal";
 import MessageModal from "../Message/MessageModal";
@@ -9,12 +14,14 @@ import SigninModal from "../Signin/SigninModal";
 import AboutModal from "../About/AboutModal";
 import HowItWorksModal from "../HowItWorks/HowItWorksModal";
 import GeoLocate from "../GeoLocate/GeoLocate";
+import ImagePicker from "../ImagePicker/ImagePicker";
 
 const ActionPopups = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logOut] = useLogOutMutation();
   const [deleteUserTree] = useImageDelete();
+  const [deletePreviousVersion] = useDeletePreviousVersionMutation();
   const [saveUserProfile] = useSaveProfile();
   const {
     showError,
@@ -39,7 +46,10 @@ const ActionPopups = () => {
     tree,
     showPicDeleteConfirm,
     showConnectForm,
+    showImagePicker,
   } = useSelector((state) => state.userData);
+  const { profile_image_link } = useSelector((state) => state.userData.user);
+
   return (
     <>
       <>
@@ -128,7 +138,7 @@ const ActionPopups = () => {
             dispatchType={() => {
               dispatch(userDataInfo({ imageUploadError: false }));
             }}
-            message={`Image action failed at this time`}
+            message={`Apologies, Unable to save at this time`}
             modalColor={"bg-orange-900"}
           />
         ) : (
@@ -165,6 +175,16 @@ const ActionPopups = () => {
         )}
       </>
       <>
+        {showImagePicker ? (
+          <ImagePicker
+            showImagePicker={showImagePicker}
+            authUserId={authUserId}
+          />
+        ) : (
+          ""
+        )}
+      </>
+      <>
         {showTreeDeleteConfirm ? (
           <MessageModal
             showModal={showTreeDeleteConfirm}
@@ -180,6 +200,11 @@ const ActionPopups = () => {
             message={`Are you sure you want to delete this image`}
             modalColor={"bg-black"}
             actionOnConfirm={() => {
+              deletePreviousVersion({
+                key: tree.tree_image_link.split("/")[
+                  tree.tree_image_link.split("/").length - 1
+                ],
+              });
               dispatch(userDataInfo({ deletedTree: tree }));
               deleteUserTree({ tree });
             }}
@@ -203,14 +228,19 @@ const ActionPopups = () => {
             }}
             message={`Are you sure you want to delete this image`}
             modalColor={"bg-black"}
-            actionOnConfirm={() =>
+            actionOnConfirm={() => {
+              deletePreviousVersion({
+                key: profile_image_link.split("/")[
+                  profile_image_link.split("/").length - 1
+                ],
+              });
               saveUserProfile({
                 edenUser: {
                   userId: authUserId,
                   profile_image_link: "",
                 },
-              })
-            }
+              });
+            }}
           />
         ) : (
           ""
@@ -240,11 +270,7 @@ const ActionPopups = () => {
           <MessageModal
             showModal={autoLoggedInMessage}
             dispatchType={() => {
-              dispatch(
-                authDataInfo({
-                  autoLoggedInMessage: false,
-                })
-              );
+              dispatch(authDataInfo({ autoLoggedInMessage: false }));
             }}
             message={`You are signed in using ${
               JSON.parse(localStorage.getItem("gardenofeden"))?.userEmail

@@ -2,84 +2,110 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   userDataInfo,
-  useOpenImageUploaderMutation,
-  useGetImageGeoLocationMutation,
   useSaveUserProfileMutation,
+  useCreateImageUrlMutation,
+  useDeletePreviousVersionMutation,
 } from "../store";
 
 const useImageUpload = () => {
   const dispatch = useDispatch();
-  const [getImageGeoLocation, geoLocationResult] =
-    useGetImageGeoLocationMutation();
   const [saveUserProfile, saveUserImageResult] = useSaveUserProfileMutation();
-  const [openImageUploader] = useOpenImageUploaderMutation();
-  const { image } = useSelector((state) => state.userData);
+  const [createImageUrl, createImageUrlResult] = useCreateImageUrlMutation();
+  const [deletePreviousVersion] = useDeletePreviousVersionMutation();
+  const { image, imageUrl, userImageVersion } = useSelector(
+    (state) => state.userData
+  );
 
   useEffect(() => {
     if (image && image.imageType === "trees") {
-      getImageGeoLocation({
-        authUserId: image.authUserId,
-        upload: image.image,
-        imageType: image.imageType,
-      });
-    } else if (image && image.imageType === "user") {
-      saveUserProfile({
-        edenUser: {
-          userId: image.authUserId,
-          profile_image_link: image.image.url,
-        },
-      });
-    }
-  }, [image, getImageGeoLocation, saveUserProfile]);
-
-  useEffect(() => {
-    if (geoLocationResult.error) {
-      dispatch(
-        userDataInfo({
-          imageUploadError: true,
-          imageUploadErrorMessage: geoLocationResult.error.message,
-        })
-      );
-    } else if (geoLocationResult.data) {
       dispatch(
         userDataInfo({
           showGeoLocate: true,
           tree: {
-            userId: geoLocationResult.data.authUserId,
-            tree_image_link: geoLocationResult.data.image_link,
-            latitude_exif: geoLocationResult.data.latitude
-              ? geoLocationResult.data.latitude
-              : null,
-            longitude_exif: geoLocationResult.data.longitude
-              ? geoLocationResult.data.longitude
-              : null,
+            userId: image.authUserId,
+            tree_image_link: `data:image/png;base64, ${image.image}`,
+            latitude_exif: image.latitude,
+            longitude_exif: image.longitude,
           },
         })
       );
+    } else if (image && image.imageType === "user") {
+      createImageUrl({
+        imageLink: `data:image/png;base64, ${image.image}`,
+        userDataInfo,
+        authUserId: image.authUserId,
+        imageType: image.imageType,
+      });
     }
-  }, [geoLocationResult, dispatch]);
+  }, [image, saveUserProfile, dispatch, createImageUrl]);
 
   useEffect(() => {
-    if (saveUserImageResult.isSuccess) {
+    if (
+      createImageUrlResult.isSuccess &&
+      imageUrl &&
+      image.imageType === "user"
+    ) {
+      saveUserProfile({
+        edenUser: {
+          userId: image.authUserId,
+          profile_image_link: imageUrl,
+        },
+      });
+    } else if (createImageUrlResult.error) {
       dispatch(
         userDataInfo({
           image: "",
-          imageType: "",
-        })
-      );
-    }
-    if (saveUserImageResult.error) {
-      dispatch(
-        userDataInfo({
+          imageUrl: "",
+          userImageVersion: "",
           imageUploadError: true,
-          image: "",
-          imageType: "",
         })
       );
     }
-  }, [saveUserImageResult, dispatch]);
+  }, [
+    createImageUrlResult,
+    dispatch,
+    imageUrl,
+    image.authUserId,
+    image.imageType,
+    saveUserProfile,
+  ]);
 
-  return [openImageUploader, saveUserImageResult];
+  useEffect(() => {
+    if (saveUserImageResult && imageUrl && image.imageType === "user") {
+      const { isSuccess, error } = saveUserImageResult;
+      if (isSuccess || error) {
+        const deleteVersion = isSuccess ? userImageVersion : imageUrl;
+        if (deleteVersion) {
+          deletePreviousVersion({
+            key: deleteVersion.split("/")[deleteVersion.split("/").length - 1],
+          });
+        }
+        dispatch(
+          userDataInfo({
+            image: "",
+            imageUrl: "",
+            userImageVersion: "",
+            imageUploadError: error ? true : false,
+          })
+        );
+
+        setTimeout(() => {
+          dispatch(
+            userDataInfo({
+              imageLoading: false,
+            })
+          );
+        }, 5000);
+      }
+    }
+  }, [
+    saveUserImageResult,
+    dispatch,
+    imageUrl,
+    image.imageType,
+    userImageVersion,
+    deletePreviousVersion,
+  ]);
 };
 
 export default useImageUpload;

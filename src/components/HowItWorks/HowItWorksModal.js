@@ -10,18 +10,7 @@ const HowItWorksModal = () => {
   return (
     <>
       <Transition appear show={showWorks} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => {
-            dispatch(
-              authDataInfo({
-                showMenu: false,
-                showWorks: false,
-              })
-            );
-          }}
-        >
+        <Dialog as="div" className="relative z-10" onClose={() => false}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"

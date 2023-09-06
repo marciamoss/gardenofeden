@@ -5,18 +5,19 @@ import {
   userDataInfo,
   useSaveUserTreesMutation,
   useCheckAuthStatusMutation,
+  useCreateImageUrlMutation,
 } from "../store";
-import { useTreeLocate, useImageUpload } from ".";
+import { useTreeLocate } from ".";
 
 const useUpdateTree = () => {
   const dispatch = useDispatch();
-  const [openImageUploader] = useImageUpload();
+  const [createImageUrl, createImageUrlResult] = useCreateImageUrlMutation();
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
-  const [saveUserTrees, saveUserTreeResult] = useSaveUserTreesMutation();
+  const [saveUserTrees, saveUserTreesResult] = useSaveUserTreesMutation();
   const [geocode, clear, latitude, longitude, approximateGeoAddress] =
     useTreeLocate();
 
-  const { image } = useSelector((state) => state.userData);
+  const { image, imageUrl } = useSelector((state) => state.userData);
   const { authUserId } = useSelector((state) => state.authData);
   const {
     userId,
@@ -34,6 +35,9 @@ const useUpdateTree = () => {
   const [usersTreeName, setUsersTreeName] = useState(users_tree_name || "");
   const [treeImageLink, setTreeImageLink] = useState(tree_image_link || "");
   const [actionType, setActionType] = useState("");
+  const [key, setKey] = useState("");
+  const [save, setSave] = useState(false);
+
   const handleLocation = useCallback(() => {
     geocode({ address: location });
   }, [geocode, location]);
@@ -44,45 +48,90 @@ const useUpdateTree = () => {
     clear();
   }, [clear]);
   const savePin = useCallback(() => {
-    saveUserTrees({
-      edenUserTrees: {
-        _id,
-        userId,
-        tree_image_link: treeImageLink,
-        latitude: latitude,
-        longitude: longitude,
-        geoAddress: approximateGeoAddress,
-        users_tree_name: usersTreeName,
-        date_planted: datePlanted,
-      },
-    });
+    if (
+      image?.imageType &&
+      ["trees", "update_Tree"].filter((i) => i === image.imageType).length > 0
+    ) {
+      createImageUrl({
+        imageLink: treeImageLink,
+        userDataInfo,
+        authUserId,
+        imageType: image.imageType,
+      });
+    } else {
+      setSave(true);
+    }
+  }, [treeImageLink, createImageUrl, authUserId, image.imageType]);
+
+  useEffect(() => {
+    if (
+      (imageUrl &&
+        ["trees", "update_Tree"].filter((i) => i === image.imageType).length >
+          0) ||
+      save
+    ) {
+      saveUserTrees({
+        edenUserTrees: {
+          _id,
+          userId,
+          tree_image_link: imageUrl || treeImageLink,
+          latitude: latitude,
+          longitude: longitude,
+          geoAddress: approximateGeoAddress,
+          users_tree_name: usersTreeName,
+          date_planted: datePlanted,
+        },
+      });
+    }
   }, [
+    imageUrl,
+    image?.imageType,
     _id,
     approximateGeoAddress,
     datePlanted,
+    treeImageLink,
     latitude,
     longitude,
     saveUserTrees,
-    treeImageLink,
     userId,
     usersTreeName,
+    save,
   ]);
 
   useEffect(() => {
-    if (image && image.imageType === "update_Tree" && image?.image?.url) {
-      setTreeImageLink(image.image.url);
-    }
-  }, [image]);
-
-  useEffect(() => {
-    if (saveUserTreeResult.isSuccess) {
+    if (createImageUrlResult.error) {
       dispatch(
         userDataInfo({
           showGeoLocate: false,
           image: "",
           imageType: "",
+          imageUrl: "",
           tree: "",
-          savedTree: saveUserTreeResult.data,
+          imageUploadError: true,
+        })
+      );
+    }
+  }, [createImageUrlResult, dispatch]);
+
+  useEffect(() => {
+    if (image && image.imageType === "update_Tree" && image?.image) {
+      const fn = tree_image_link.split("/");
+      setKey(fn[fn.length - 1]);
+      setTreeImageLink(`data:image/png;base64, ${image.image}`);
+    }
+  }, [image, tree_image_link, userId]);
+
+  useEffect(() => {
+    if (saveUserTreesResult.isSuccess) {
+      dispatch(
+        userDataInfo({
+          showGeoLocate: false,
+          image: "",
+          imageType: "",
+          imageUrl: "",
+          tree: "",
+          savedTree: saveUserTreesResult.data,
+          imageVersion: key,
         })
       );
       dispatch(
@@ -91,14 +140,22 @@ const useUpdateTree = () => {
         })
       );
     }
-    if (saveUserTreeResult.error) {
+    if (saveUserTreesResult.error) {
       dispatch(
         userDataInfo({
+          showGeoLocate: false,
+          image: "",
+          imageType: "",
+          imageUrl: "",
+          tree: "",
           imageUploadError: true,
+          imageVersion: imageUrl
+            ? imageUrl.split("/")[imageUrl.split("/").length - 1]
+            : "",
         })
       );
     }
-  }, [saveUserTreeResult, dispatch]);
+  }, [saveUserTreesResult, dispatch, imageUrl, key]);
 
   useEffect(() => {
     if (approximateGeoAddress) {
@@ -125,10 +182,9 @@ const useUpdateTree = () => {
           handleClear();
         }
         if (actionType === "image_upload" && authUserId) {
-          openImageUploader({
-            authUserId,
-            imageType: "update_Tree",
-          });
+          dispatch(
+            userDataInfo({ showImagePicker: true, imageType: "update_Tree" })
+          );
         }
         setActionType("");
       }
@@ -140,7 +196,6 @@ const useUpdateTree = () => {
     dispatch,
     handleClear,
     handleLocation,
-    openImageUploader,
     savePin,
   ]);
 

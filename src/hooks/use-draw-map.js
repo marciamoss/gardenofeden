@@ -8,16 +8,20 @@ import {
   userDataInfo,
   useFetchAllTreesQuery,
   useCheckAuthStatusMutation,
+  useDeletePreviousVersionMutation,
   store,
 } from "../store";
 import InfoWindow from "../components/Main/InfoWindow";
 const keys = require("../keys.js");
 
 const useDrawMap = () => {
-  const { savedTree, deletedTree } = useSelector((state) => state.userData);
+  const { savedTree, deletedTree, imageVersion } = useSelector(
+    (state) => state.userData
+  );
   const { authUserId } = useSelector((state) => state.authData);
   const { data } = useFetchAllTreesQuery({ authUserId });
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
+  const [deletePreviousVersion] = useDeletePreviousVersionMutation();
   const dispatch = useDispatch();
   const [treeClicked, setTreeClicked] = useState(null);
   const [allTrees, setAllTrees] = useState(null);
@@ -46,7 +50,6 @@ const useDrawMap = () => {
         markers.current[i].setMap(null);
       }
     }
-
     markers.current = [];
   }, [markers]);
 
@@ -133,7 +136,13 @@ const useDrawMap = () => {
   );
 
   useEffect(() => {
-    if (deletedTree && deletedTree._id === treeClicked._id) {
+    if (imageVersion) {
+      deletePreviousVersion({ key: imageVersion });
+    }
+  }, [imageVersion, deletePreviousVersion]);
+
+  useEffect(() => {
+    if (deletedTree && deletedTree?._id === treeClicked?._id) {
       closePopUps();
       infoClear();
       dispatch(userDataInfo({ deletedTree: "" }));

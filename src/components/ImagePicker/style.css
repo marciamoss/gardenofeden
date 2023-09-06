@@ -1,0 +1,28 @@
+.file-upload {
+  height: 300px;
+  width: 300px;
+  margin: 30px auto;
+  border: 1px dashed black;
+  overflow: hidden;
+  position: relative;
+  background-color: black;
+}
+.file-upload input {
+  position: absolute;
+  height: 1200px;
+  width: 1200px;
+  left: -600px;
+  top: -600px;
+  background: transparent;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  cursor: pointer;
+}
+
+.upload-icon {
+  height: 210px;
+  width: 210px;
+  margin: 45px;
+  padding: 45px;
+}

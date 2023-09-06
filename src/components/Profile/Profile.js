@@ -16,15 +16,15 @@ import {
 const Profile = () => {
   const dispatch = useDispatch();
   const { authUserId } = useSelector((state) => state.authData);
-  const { showProfileUpdateForm } = useSelector((state) => state.userData);
-  const [name, location, bio, profile_image_link, isFetching, isLoading] =
-    useGetProfile({
-      authUserId,
-    });
-  const [openImageUploader, saveUserImageResult] = useImageUpload();
-
+  const { showProfileUpdateForm, imageLoading } = useSelector(
+    (state) => state.userData
+  );
+  const { name, location, bio, profile_image_link } = useSelector(
+    (state) => state.userData.user
+  );
+  useGetProfile({ authUserId });
+  useImageUpload();
   useCheckLoginStatus();
-
   return (
     <div
       id="profile"
@@ -33,38 +33,43 @@ const Profile = () => {
       <Card className="rounded-3xl mt-10 h-5/6 w-1/5 ml-5 float-left bg-purple-50">
         <CardHeader floated={false} className="h-2/4 m-2">
           <div
-            className={`${
-              isLoading ? "animate-pulse bg-stone-900" : ""
-            } h-3/4 border-2 border-white flex flex-row place-content-center`}
+            className={` bg-slate-100 h-3/4 border-2 border-black flex flex-row place-content-center`}
           >
             {profile_image_link ? (
               <img
                 src={profile_image_link}
                 alt="profile"
                 className={`self-center ${
-                  saveUserImageResult.status === "pending" || isFetching
-                    ? "animate-pulse"
-                    : ""
-                } border-2 border-green-100 w-48 h-48`}
+                  imageLoading ? "animate-pulse" : ""
+                } border-5 border-white h-48 bg-contain`}
               />
             ) : (
               <CgProfile
-                className={`${
-                  isLoading ? "hidden" : ""
-                } place-content-center w-full h-full h-1/4`}
+                className={`self-center ${
+                  imageLoading ? "animate-pulse" : ""
+                } w-48 h-48`}
               />
             )}
           </div>
           <div className="bg-purple-50 h-1/4 flex flex-row place-content-center">
             <div className="self-center">
               <button
-                className="bg-green-50 w-fit text-sm p-1 rounded-full text-sm font-semibold text-green-900 hover:bg-green-100"
-                disabled={
-                  saveUserImageResult.status === "pending" || isFetching
-                }
-                onClick={() =>
-                  openImageUploader({ authUserId, imageType: "user" })
-                }
+                className={`${
+                  imageLoading
+                    ? "bg-gray-50 text-gray-300"
+                    : "bg-green-50 text-green-900"
+                } w-fit text-sm p-1 rounded-full text-sm font-semibold  hover:bg-green-100`}
+                disabled={imageLoading}
+                onClick={() => {
+                  dispatch(
+                    userDataInfo({
+                      showImagePicker: true,
+                      imageType: "user",
+                      userImageVersion: profile_image_link,
+                      imageLoading: true,
+                    })
+                  );
+                }}
               >
                 <div className="relative group">
                   <RiGalleryUploadFill size={30} />
@@ -77,10 +82,12 @@ const Profile = () => {
             <div className="self-center">
               <button
                 className={`${
-                  !profile_image_link ? "text-slate-400" : "text-red-700"
-                } bg-red-50 w-fit ml-2 text-sm p-1 rounded-full
+                  !profile_image_link || imageLoading
+                    ? "bg-gray-50 text-gray-300"
+                    : "text-red-700 bg-red-50"
+                }  w-fit ml-2 text-sm p-1 rounded-full
               text-sm font-semibold hover:bg-red-100`}
-                disabled={!profile_image_link}
+                disabled={!profile_image_link || imageLoading}
                 onClick={() =>
                   dispatch(
                     userDataInfo({
@@ -138,10 +145,7 @@ const Profile = () => {
         style={{ backgroundColor: "rgba(8, 10, 1, 0.2)" }}
         className="mt-10 mr-7 ml-7 rounded-3xl float-right h-5/6 w-4/5 overflow-scroll border-2 border-gray-200"
       >
-        <TreeUpload
-          authUserId={authUserId}
-          openImageUploader={openImageUploader}
-        />
+        <TreeUpload authUserId={authUserId} />
       </div>
 
       {showProfileUpdateForm ? (

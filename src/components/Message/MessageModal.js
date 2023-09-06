@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useRef, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { MdClose } from "react-icons/md";
 import { GoThumbsup, GoThumbsdown } from "react-icons/go";
@@ -10,10 +10,17 @@ const MessageModal = ({
   modalColor,
   actionOnConfirm,
 }) => {
+  const messageModalRef = useRef(null);
+  useEffect(() => {
+    if (messageModalRef?.current) {
+      messageModalRef.current.focus();
+    }
+  }, []);
+
   return (
     <>
       <Transition appear show={showModal} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={dispatchType}>
+        <Dialog as="div" className="relative z-10" onClose={() => false}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -42,7 +49,8 @@ const MessageModal = ({
                 >
                   <button
                     type="button"
-                    className="absolute right-0 top-0 p-2 outline-none"
+                    ref={messageModalRef}
+                    className="absolute right-2 top-2 p-0 outline-none focus:outline-none focus:border-2 focus:border-white focus:ring-offset-2"
                     onClick={dispatchType}
                   >
                     <MdClose size={30} />

@@ -2,7 +2,7 @@
 
 gardeOfEden is an application promoting the importance of planting trees to help renew resources lost to mass deforestation.
 
-The application is developed with **React, Redux Toolkit Query, Firebase passwordless login, Filestack** for image processing.
+The application is developed with **React, Redux Toolkit Query, Firebase passwordless login, AWS** for image storage.
 
 # Design:
 

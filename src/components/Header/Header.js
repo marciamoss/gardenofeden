@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import MenuDropDown from "../Menu/MenuDropDown";
 import { authDataInfo } from "../../store";
@@ -13,10 +13,17 @@ const logo = require(`../../images/tree-earth.png`);
 
 const Header = () => {
   const dispatch = useDispatch();
+  const headerRef = useRef(null);
   const { signedIn, showMenu, authUserId } = useSelector(
     (state) => state.authData
   );
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
+
+  useEffect(() => {
+    if (headerRef?.current) {
+      headerRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (checkAuthStatusResult.isSuccess) {
@@ -51,7 +58,8 @@ const Header = () => {
           >
             <div>
               <Menu.Button
-                onClick={() => checkAuthStatus({ authUserId })}
+                ref={headerRef}
+                onFocus={() => checkAuthStatus({ authUserId })}
                 className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
               >
                 <ImMenu className="text-lg font-bold max-[640px]:text-sm max-[280px]:text-xs" />

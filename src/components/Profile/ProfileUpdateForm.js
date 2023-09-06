@@ -10,12 +10,8 @@ const ProfileUpdateForm = ({ name, location, bio }) => {
   const [updatedLocation, setUpdatedLocation] = useState(location || "");
   const [updatedBio, setUpdatedBio] = useState(bio || "");
   const [saveUserProfile] = useSaveProfile();
-  const { authUserId, showProfileUpdateForm } = useSelector((state) => {
-    return {
-      authUserId: state.authData.authUserId,
-      showProfileUpdateForm: state.userData.showProfileUpdateForm,
-    };
-  });
+  const { authUserId } = useSelector((state) => state.authData);
+  const { showProfileUpdateForm } = useSelector((state) => state.userData);
 
   return (
     <>

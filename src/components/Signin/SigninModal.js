@@ -10,14 +10,14 @@ import { MdClose } from "react-icons/md";
 
 const SigninModal = () => {
   const dispatch = useDispatch();
-  const emailRef = useRef(null);
+  const signinModalRef = useRef(null);
   const [checkAuthStatus, checkAuthStatusResult] = useCheckAuthStatusMutation();
   const [email, setEmail] = useState("");
   const [logIn] = useLogInMutation();
   const { showSignin, authUserId } = useSelector((state) => state.authData);
   useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
+    if (signinModalRef?.current) {
+      signinModalRef.current.focus();
     }
   }, []);
   useEffect(() => {
@@ -28,6 +28,7 @@ const SigninModal = () => {
           showSignin: false,
         })
       );
+
       if (!authUserId && email) {
         logIn({ email });
       }
@@ -36,18 +37,7 @@ const SigninModal = () => {
   return (
     <>
       <Transition appear show={showSignin} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => {
-            dispatch(
-              authDataInfo({
-                showMenu: false,
-                showSignin: false,
-              })
-            );
-          }}
-        >
+        <Dialog as="div" className="relative z-10" onClose={() => false}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -74,7 +64,7 @@ const SigninModal = () => {
                 <Dialog.Panel className="bg-sky-900 w-full max-w-md transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all">
                   <button
                     type="button"
-                    className="absolute right-0 top-0 p-2 outline-none"
+                    className="absolute right-2 top-2 p-0 outline-none focus:outline-none focus:border-2 focus:border-white focus:ring-offset-2"
                     onClick={() => {
                       dispatch(
                         authDataInfo({
@@ -100,7 +90,7 @@ const SigninModal = () => {
                   >
                     <div className="mt-2 font-serif">
                       <input
-                        ref={emailRef}
+                        ref={signinModalRef}
                         type="text"
                         className="h-14 max-[280px]:text-xs max-[280px]:h-10 w-full text-black pl-2 pr-2 rounded-lg z-0 focus:shadow focus:outline-none"
                         placeholder="Email"
@@ -113,12 +103,11 @@ const SigninModal = () => {
 
                     <div className="mt-4">
                       <button
-                        type="button"
+                        type="submit"
                         disabled={!email}
                         className={`${
                           !email ? "bg-slate-400" : ""
                         } max-[280px]:text-xs inline-flex float-left justify-center rounded-md border bg-green-300 border-2 border-black max-[280px]:px-2 max-[280px]:py-1 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`}
-                        onClick={() => checkAuthStatus({ authUserId })}
                       >
                         Submit
                       </button>
