@@ -41,7 +41,7 @@ const Profile = () => {
                 alt="profile"
                 className={`self-center ${
                   imageLoading ? "animate-pulse" : ""
-                } border-5 border-white h-48 bg-contain`}
+                } border-5 border-white h-full bg-contain`}
               />
             ) : (
               <CgProfile

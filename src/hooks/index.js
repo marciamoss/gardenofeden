@@ -8,6 +8,7 @@ import useFormatDate from "./use-format-date";
 import useImageDelete from "./use-image-delete";
 import useUpdateTree from "./use-update-tree";
 import useGetExifData from "./use-get-exif-data";
+import useImagePicker from "./use-image-picker";
 
 export {
   useCheckLoginStatus,
@@ -20,4 +21,5 @@ export {
   useImageDelete,
   useUpdateTree,
   useGetExifData,
+  useImagePicker,
 };
